@@ -1,0 +1,41 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-03-30T08:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Entry with extremely long symptom name",
+      "symptoms": [
+        {"name": "This is an incredibly long symptom name that goes way beyond any reasonable length limit that should be enforced by the application to prevent UI overflow issues and database problems", "severity": 3, "severity_label": "Moderate"}
+      ],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-03-29T14:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": null,
+      "symptoms": [
+        {"name": "Headache", "severity": 2, "severity_label": "Mild"}
+      ],
+      "tags": ["This is an incredibly long tag name that goes way beyond any reasonable length limit that should be enforced by the application to prevent UI overflow issues and database problems"]
+    },
+    {
+      "date_time": "2026-03-28T09:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Both symptom and tag are way too long",
+      "symptoms": [
+        {"name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "severity": 4, "severity_label": "Severe"}
+      ],
+      "tags": ["BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"]
+    },
+    {
+      "date_time": "2026-03-27T19:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Exactly at the 120 char limit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa end",
+      "symptoms": [
+        {"name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "severity": 5, "severity_label": "Very Severe"}
+      ],
+      "tags": ["bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]
+    }
+  ]
+}

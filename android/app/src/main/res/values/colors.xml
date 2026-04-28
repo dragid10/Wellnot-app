@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adaptive icon background color (visible behind the foreground layer) -->
+    <color name="ic_launcher_background">#1D1D1C</color>
+
+    <!-- Widget colors (light mode) -->
+    <color name="widget_background">#FFFFFF</color>
+    <color name="widget_teal_primary">#009688</color>
+    <color name="widget_text_primary">#212121</color>
+    <color name="widget_text_secondary">#9E9E9E</color>
+    <color name="widget_text_light">#E0E0E0</color>
+    <color name="widget_surface_dark">#1C1B1F</color>
+</resources>

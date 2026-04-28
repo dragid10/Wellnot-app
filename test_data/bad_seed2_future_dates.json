@@ -1,0 +1,51 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2027-01-15T08:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Entry from the future",
+      "symptoms": [
+        {"name": "Headache", "severity": 2, "severity_label": "Mild"}
+      ],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-12-25T14:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": "Christmas 2026 - hasn't happened yet",
+      "symptoms": [
+        {"name": "Fatigue", "severity": 3, "severity_label": "Moderate"}
+      ],
+      "tags": ["At Home"]
+    },
+    {
+      "date_time": "2026-06-01T09:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Two months from now",
+      "symptoms": [
+        {"name": "Nausea", "severity": 4, "severity_label": "Severe"},
+        {"name": "Dizziness", "severity": 3, "severity_label": "Moderate"}
+      ],
+      "tags": ["Exercise"]
+    },
+    {
+      "date_time": "2030-01-01T00:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Way in the future",
+      "symptoms": [
+        {"name": "Fatigue", "severity": 5, "severity_label": "Very Severe"}
+      ],
+      "tags": ["At Work", "High Stress"]
+    },
+    {
+      "date_time": "2026-04-02T12:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Just one day in the future",
+      "symptoms": [
+        {"name": "Headache", "severity": 1, "severity_label": "Very Mild"}
+      ],
+      "tags": ["After Meal"]
+    }
+  ]
+}

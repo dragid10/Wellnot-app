@@ -1,0 +1,2555 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-01-05T07:00:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "500 unique symptoms stress test - batch 1 of 5 (100 symptoms each)",
+      "symptoms": [
+        {
+          "name": "Symptom 001",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 002",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 003",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 004",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 005",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 006",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 007",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 008",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 009",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 010",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 011",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 012",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 013",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 014",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 015",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 016",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 017",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 018",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 019",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 020",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 021",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 022",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 023",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 024",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 025",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 026",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 027",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 028",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 029",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 030",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 031",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 032",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 033",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 034",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 035",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 036",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 037",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 038",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 039",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 040",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 041",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 042",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 043",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 044",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 045",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 046",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 047",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 048",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 049",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 050",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 051",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 052",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 053",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 054",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 055",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 056",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 057",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 058",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 059",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 060",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 061",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 062",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 063",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 064",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 065",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 066",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 067",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 068",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 069",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 070",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 071",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 072",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 073",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 074",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 075",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 076",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 077",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 078",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 079",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 080",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 081",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 082",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 083",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 084",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 085",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 086",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 087",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 088",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 089",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 090",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 091",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 092",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 093",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 094",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 095",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 096",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 097",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 098",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 099",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 100",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        }
+      ],
+      "tags": [
+        "Stress Test"
+      ]
+    },
+    {
+      "date_time": "2026-01-04T07:10:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "500 unique symptoms stress test - batch 2 of 5 (100 symptoms each)",
+      "symptoms": [
+        {
+          "name": "Symptom 101",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 102",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 103",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 104",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 105",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 106",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 107",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 108",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 109",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 110",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 111",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 112",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 113",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 114",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 115",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 116",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 117",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 118",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 119",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 120",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 121",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 122",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 123",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 124",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 125",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 126",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 127",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 128",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 129",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 130",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 131",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 132",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 133",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 134",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 135",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 136",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 137",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 138",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 139",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 140",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 141",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 142",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 143",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 144",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 145",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 146",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 147",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 148",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 149",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 150",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 151",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 152",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 153",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 154",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 155",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 156",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 157",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 158",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 159",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 160",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 161",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 162",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 163",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 164",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 165",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 166",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 167",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 168",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 169",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 170",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 171",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 172",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 173",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 174",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 175",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 176",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 177",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 178",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 179",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 180",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 181",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 182",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 183",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 184",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 185",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 186",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 187",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 188",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 189",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 190",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 191",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 192",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 193",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 194",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 195",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 196",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 197",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 198",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 199",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 200",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        }
+      ],
+      "tags": [
+        "Stress Test"
+      ]
+    },
+    {
+      "date_time": "2026-01-03T07:20:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "500 unique symptoms stress test - batch 3 of 5 (100 symptoms each)",
+      "symptoms": [
+        {
+          "name": "Symptom 201",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 202",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 203",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 204",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 205",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 206",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 207",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 208",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 209",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 210",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 211",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 212",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 213",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 214",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 215",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 216",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 217",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 218",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 219",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 220",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 221",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 222",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 223",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 224",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 225",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 226",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 227",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 228",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 229",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 230",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 231",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 232",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 233",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 234",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 235",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 236",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 237",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 238",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 239",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 240",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 241",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 242",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 243",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 244",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 245",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 246",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 247",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 248",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 249",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 250",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 251",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 252",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 253",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 254",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 255",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 256",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 257",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 258",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 259",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 260",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 261",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 262",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 263",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 264",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 265",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 266",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 267",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 268",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 269",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 270",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 271",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 272",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 273",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 274",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 275",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 276",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 277",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 278",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 279",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 280",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 281",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 282",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 283",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 284",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 285",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 286",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 287",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 288",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 289",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 290",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 291",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 292",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 293",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 294",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 295",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 296",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 297",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 298",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 299",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 300",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        }
+      ],
+      "tags": [
+        "Stress Test"
+      ]
+    },
+    {
+      "date_time": "2026-01-02T07:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "500 unique symptoms stress test - batch 4 of 5 (100 symptoms each)",
+      "symptoms": [
+        {
+          "name": "Symptom 301",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 302",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 303",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 304",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 305",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 306",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 307",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 308",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 309",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 310",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 311",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 312",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 313",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 314",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 315",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 316",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 317",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 318",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 319",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 320",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 321",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 322",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 323",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 324",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 325",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 326",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 327",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 328",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 329",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 330",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 331",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 332",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 333",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 334",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 335",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 336",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 337",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 338",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 339",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 340",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 341",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 342",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 343",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 344",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 345",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 346",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 347",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 348",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 349",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 350",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 351",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 352",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 353",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 354",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 355",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 356",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 357",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 358",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 359",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 360",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 361",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 362",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 363",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 364",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 365",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 366",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 367",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 368",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 369",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 370",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 371",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 372",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 373",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 374",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 375",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 376",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 377",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 378",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 379",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 380",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 381",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 382",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 383",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 384",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 385",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 386",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 387",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 388",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 389",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 390",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 391",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 392",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 393",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 394",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 395",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 396",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 397",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 398",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 399",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 400",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        }
+      ],
+      "tags": [
+        "Stress Test"
+      ]
+    },
+    {
+      "date_time": "2026-01-01T07:40:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "500 unique symptoms stress test - batch 5 of 5 (100 symptoms each)",
+      "symptoms": [
+        {
+          "name": "Symptom 401",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 402",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 403",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 404",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 405",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 406",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 407",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 408",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 409",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 410",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 411",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 412",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 413",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 414",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 415",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 416",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 417",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 418",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 419",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 420",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 421",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 422",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 423",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 424",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 425",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 426",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 427",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 428",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 429",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 430",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 431",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 432",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 433",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 434",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 435",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 436",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 437",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 438",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 439",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 440",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 441",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 442",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 443",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 444",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 445",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 446",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 447",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 448",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 449",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 450",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 451",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 452",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 453",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 454",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 455",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 456",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 457",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 458",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 459",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 460",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 461",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 462",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 463",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 464",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 465",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 466",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 467",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 468",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 469",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 470",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 471",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 472",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 473",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 474",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 475",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 476",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 477",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 478",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 479",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 480",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 481",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 482",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 483",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 484",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 485",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 486",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 487",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 488",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 489",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 490",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 491",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 492",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 493",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 494",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 495",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Symptom 496",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Symptom 497",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Symptom 498",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Symptom 499",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Symptom 500",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        }
+      ],
+      "tags": [
+        "Stress Test"
+      ]
+    }
+  ]
+}

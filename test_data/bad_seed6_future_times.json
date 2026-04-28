@@ -1,0 +1,65 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-04-01T23:59:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Today but nearly midnight - future time",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "Before Sleep"
+      ]
+    },
+    {
+      "date_time": "2026-04-01T20:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": "Today at 8pm - may or may not have happened yet",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "At Home"
+      ]
+    },
+    {
+      "date_time": "2026-04-01T22:30:00.000",
+      "mood": "\ud83d\ude34",
+      "notes": "Today at 10:30pm - future time same day",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 4,
+          "severity_label": "Severe"
+        }
+      ],
+      "tags": [
+        "Before Sleep"
+      ]
+    },
+    {
+      "date_time": "2026-04-01T18:00:00.000",
+      "mood": "\ud83e\udd29",
+      "notes": "Today at 6pm - borderline future time",
+      "symptoms": [
+        {
+          "name": "Dizziness",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "After Meal"
+      ]
+    }
+  ]
+}

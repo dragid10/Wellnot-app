@@ -1,0 +1,31 @@
+repos:
+  # Generic file hygiene hooks.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # Trim trailing whitespace from all files.
+      - id: trailing-whitespace
+      # Ensure every file ends with a newline.
+      - id: end-of-file-fixer
+      # Prevent committing unresolved merge conflict markers.
+      - id: check-merge-conflict
+      # Validate YAML syntax (ci.yml, pubspec.yaml, etc.).
+      - id: check-yaml
+      # Prevent committing private keys.
+      - id: detect-private-key
+
+  # Dart formatting — auto-fixes on commit.
+  - repo: local
+    hooks:
+      - id: dart-format
+        name: dart format
+        entry: dart format
+        language: system
+        types: [dart]
+
+      - id: flutter-analyze
+        name: flutter analyze
+        entry: flutter analyze --no-pub
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -1,0 +1,93 @@
+# CI workflow — runs on every PR targeting main.
+#
+# Steps:
+# 1. Check code formatting (dart format)
+# 2. Run static analysis (flutter analyze)
+# 3. Run unit + widget tests (flutter test)
+#
+# Conventional commit enforcement is handled by the pr-title job.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+# Explicit permissions for the GITHUB_TOKEN:
+# - contents:read — required by actions/checkout to clone the private repo
+# - pull-requests:read — required by semantic-pull-request to inspect PR title
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # Validate PR title follows conventional commit format.
+  pr-title:
+    name: PR Title (Conventional Commits)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            chore
+            test
+            refactor
+            style
+            perf
+            ci
+            build
+
+  # Require changelog fragment for user-facing PRs.
+  changelog:
+    name: Changelog Fragment
+    runs-on: ubuntu-latest
+    # Skip if PR has 'skip-changelog' label.
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-changelog') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changelog fragment
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if echo "$PR_TITLE" | grep -qE '^(feat|fix|perf)(\(.+\))?:'; then
+            FRAGMENTS=$(git diff --name-only --diff-filter=A origin/main...HEAD -- '.changes/unreleased/*.yaml' | wc -l)
+            if [ "$FRAGMENTS" -eq 0 ]; then
+              echo "::error::User-facing PR requires a changelog fragment. Run 'changie new' to create one."
+              echo ""
+              echo "If this change is truly not user-facing, add the 'skip-changelog' label to the PR."
+              exit 1
+            fi
+            echo "Found $FRAGMENTS changelog fragment(s)."
+          else
+            echo "Non-user-facing PR type — changelog fragment not required."
+          fi
+
+  # Lint, format, and test the Flutter project.
+  check:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test

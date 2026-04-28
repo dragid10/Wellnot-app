@@ -1,0 +1,51 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-03-30T08:30:00.000",
+      "mood": "\ud83e\udd29",
+      "notes": "Star-struck emoji - not in our mood list",
+      "symptoms": [
+        {"name": "Headache", "severity": 2, "severity_label": "Mild"}
+      ],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-03-29T14:00:00.000",
+      "mood": "\ud83d\udc7b",
+      "notes": "Ghost emoji - not in our mood list",
+      "symptoms": [
+        {"name": "Fatigue", "severity": 3, "severity_label": "Moderate"}
+      ],
+      "tags": ["At Work"]
+    },
+    {
+      "date_time": "2026-03-28T09:15:00.000",
+      "mood": "\ud83e\udd21",
+      "notes": "Clown emoji - not in our mood list",
+      "symptoms": [
+        {"name": "Nausea", "severity": 4, "severity_label": "Severe"}
+      ],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-03-27T19:00:00.000",
+      "mood": "\ud83d\udc80",
+      "notes": "Skull emoji - not in our mood list",
+      "symptoms": [
+        {"name": "Dizziness", "severity": 5, "severity_label": "Very Severe"},
+        {"name": "Headache", "severity": 3, "severity_label": "Moderate"}
+      ],
+      "tags": ["At Home", "High Stress"]
+    },
+    {
+      "date_time": "2026-03-26T12:30:00.000",
+      "mood": "not even an emoji",
+      "notes": "Plain text as mood",
+      "symptoms": [
+        {"name": "Fatigue", "severity": 1, "severity_label": "Very Mild"}
+      ],
+      "tags": ["Exercise"]
+    }
+  ]
+}

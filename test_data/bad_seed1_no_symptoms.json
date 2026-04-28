@@ -1,0 +1,54 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-04-01T08:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Feeling great this morning",
+      "symptoms": [],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-03-31T14:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": null,
+      "symptoms": [],
+      "tags": ["At Work", "High Stress"]
+    },
+    {
+      "date_time": "2026-03-30T09:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Woke up feeling nauseous",
+      "symptoms": [],
+      "tags": ["After Wakeup"]
+    },
+    {
+      "date_time": "2026-03-29T19:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Long day",
+      "symptoms": [],
+      "tags": ["At Work"]
+    },
+    {
+      "date_time": "2026-03-28T12:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Nice lunch break walk",
+      "symptoms": [],
+      "tags": ["Exercise"]
+    },
+    {
+      "date_time": "2026-03-27T07:45:00.000",
+      "mood": "\ud83e\udd12",
+      "notes": null,
+      "symptoms": [],
+      "tags": ["At Home"]
+    },
+    {
+      "date_time": "2026-03-26T16:00:00.000",
+      "mood": "\ud83d\ude30",
+      "notes": "Anxiety before presentation",
+      "symptoms": [],
+      "tags": ["At Work"]
+    }
+  ]
+}

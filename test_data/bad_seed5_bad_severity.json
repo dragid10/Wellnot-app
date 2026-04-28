@@ -1,0 +1,83 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-03-24T06:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Severity 0 - below valid range",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 0,
+          "severity_label": "None"
+        }
+      ],
+      "tags": [
+        "After Wakeup"
+      ]
+    },
+    {
+      "date_time": "2026-03-23T06:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": "Severity 10 - above valid range",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 10,
+          "severity_label": "Extreme"
+        }
+      ],
+      "tags": [
+        "At Work"
+      ]
+    },
+    {
+      "date_time": "2026-03-22T06:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Negative severity",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": -3,
+          "severity_label": "Negative"
+        }
+      ],
+      "tags": [
+        "After Wakeup"
+      ]
+    },
+    {
+      "date_time": "2026-03-21T06:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Severity 100 - way out of range",
+      "symptoms": [
+        {
+          "name": "Dizziness",
+          "severity": 100,
+          "severity_label": "Off the charts"
+        },
+        {
+          "name": "Headache",
+          "severity": 999,
+          "severity_label": "Impossible"
+        }
+      ],
+      "tags": [
+        "At Home"
+      ]
+    },
+    {
+      "date_time": "2026-03-20T06:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Missing severity field entirely",
+      "symptoms": [
+        {
+          "name": "Fatigue"
+        }
+      ],
+      "tags": [
+        "Exercise"
+      ]
+    }
+  ]
+}

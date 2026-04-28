@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Data extraction rules for Android 12+ (dataExtractionRules).
+     Excludes the SQLite database from cloud backup (Google Drive) to prevent
+     user data from syncing to the cloud. Device-to-device transfer is
+     allowed so users keep their data when switching phones. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="." />
+        <exclude domain="file" path="app_flutter/db.sqlite" />
+        <exclude domain="file" path="app_flutter/db.sqlite-journal" />
+        <exclude domain="file" path="app_flutter/db.sqlite-wal" />
+    </cloud-backup>
+    <device-transfer />
+</data-extraction-rules>

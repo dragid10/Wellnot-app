@@ -1,0 +1,432 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-04-01T08:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Feeling great this morning, slept well",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "After Wakeup",
+        "Exercise"
+      ]
+    },
+    {
+      "date_time": "2026-03-31T14:00:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": null,
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "High Stress"
+      ]
+    },
+    {
+      "date_time": "2026-03-30T09:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Woke up feeling nauseous",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Dizziness",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "After Wakeup",
+        "Poor Sleep"
+      ]
+    },
+    {
+      "date_time": "2026-03-29T19:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Long day, completely wiped out",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Headache",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "High Stress",
+        "Skipped Meal"
+      ]
+    },
+    {
+      "date_time": "2026-03-28T12:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Nice lunch break walk",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "Exercise",
+        "Sunny"
+      ]
+    },
+    {
+      "date_time": "2026-03-27T07:45:00.000",
+      "mood": "\ud83e\udd12",
+      "notes": "Slight fever, staying home today",
+      "symptoms": [
+        {
+          "name": "Fever",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Fatigue",
+          "severity": 4,
+          "severity_label": "Severe"
+        }
+      ],
+      "tags": [
+        "At Home",
+        "Took Medication"
+      ]
+    },
+    {
+      "date_time": "2026-03-26T16:00:00.000",
+      "mood": "\ud83d\ude30",
+      "notes": "Anxiety before presentation",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": 2,
+          "severity_label": "Mild"
+        },
+        {
+          "name": "Dry mouth",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "High Stress"
+      ]
+    },
+    {
+      "date_time": "2026-03-25T21:00:00.000",
+      "mood": "\ud83d\ude34",
+      "notes": null,
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "Before Sleep",
+        "Exercise"
+      ]
+    },
+    {
+      "date_time": "2026-03-24T13:00:00.000",
+      "mood": "\ud83e\udd14",
+      "notes": "Weird feeling after lunch",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        },
+        {
+          "name": "Dizziness",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "After Meal",
+        "During Meal"
+      ]
+    },
+    {
+      "date_time": "2026-03-23T10:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Great weekend morning",
+      "symptoms": [
+        {
+          "name": "Dry mouth",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "At Home",
+        "After Wakeup",
+        "Sunny"
+      ]
+    },
+    {
+      "date_time": "2026-03-22T15:00:00.000",
+      "mood": "\ud83d\ude20",
+      "notes": "Migraine won't go away",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 5,
+          "severity_label": "Very Severe"
+        },
+        {
+          "name": "Nausea",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "At Home",
+        "Took Medication",
+        "Poor Sleep"
+      ]
+    },
+    {
+      "date_time": "2026-03-21T08:00:00.000",
+      "mood": "\ud83d\ude43",
+      "notes": "Meh morning but manageable",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "After Wakeup",
+        "Dehydrated"
+      ]
+    },
+    {
+      "date_time": "2026-03-20T18:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Dinner with friends, feeling good",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "After Meal",
+        "With Drink"
+      ]
+    },
+    {
+      "date_time": "2026-03-19T11:00:00.000",
+      "mood": "\ud83d\ude2c",
+      "notes": "Dry mouth all morning, need to hydrate more",
+      "symptoms": [
+        {
+          "name": "Dry mouth",
+          "severity": 4,
+          "severity_label": "Severe"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "Dehydrated",
+        "Exercise"
+      ]
+    },
+    {
+      "date_time": "2026-03-18T20:00:00.000",
+      "mood": "\ud83d\ude22",
+      "notes": "Rough day, everything hurts",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Fatigue",
+          "severity": 4,
+          "severity_label": "Severe"
+        },
+        {
+          "name": "Nausea",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Home",
+        "High Stress",
+        "Poor Sleep"
+      ]
+    },
+    {
+      "date_time": "2026-03-17T09:45:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": null,
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "Before Meal"
+      ]
+    },
+    {
+      "date_time": "2026-03-16T14:30:00.000",
+      "mood": "\ud83e\udd15",
+      "notes": "Bumped my head on the cabinet door",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Dizziness",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Home"
+      ]
+    },
+    {
+      "date_time": "2026-03-15T07:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Saturday morning jog, feeling energized",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "Exercise",
+        "Sunny",
+        "After Wakeup"
+      ]
+    },
+    {
+      "date_time": "2026-03-14T17:00:00.000",
+      "mood": "\ud83d\ude29",
+      "notes": "Friday afternoon crash",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 3,
+          "severity_label": "Moderate"
+        },
+        {
+          "name": "Dry mouth",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "Dehydrated",
+        "Skipped Meal"
+      ]
+    },
+    {
+      "date_time": "2026-03-13T12:00:00.000",
+      "mood": "\ud83d\ude2e",
+      "notes": "Sudden dizziness after standing up too fast",
+      "symptoms": [
+        {
+          "name": "Dizziness",
+          "severity": 4,
+          "severity_label": "Severe"
+        }
+      ],
+      "tags": [
+        "At Work",
+        "Skipped Meal",
+        "Dehydrated"
+      ]
+    },
+    {
+      "date_time": "2026-03-12T22:00:00.000",
+      "mood": "\ud83d\ude34",
+      "notes": "Taking melatonin tonight",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "Before Sleep",
+        "Took Medication"
+      ]
+    },
+    {
+      "date_time": "2026-03-12T08:15:00.000",
+      "mood": "\ud83e\udd22",
+      "notes": "Morning sickness feeling, skipped breakfast",
+      "symptoms": [
+        {
+          "name": "Nausea",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "After Wakeup",
+        "Skipped Meal",
+        "Hormonal"
+      ]
+    },
+    {
+      "date_time": "2026-03-11T16:00:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "Rainy day but cozy at home",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 1,
+          "severity_label": "Very Mild"
+        }
+      ],
+      "tags": [
+        "At Home",
+        "Rainy",
+        "With Drink"
+      ]
+    }
+  ]
+}

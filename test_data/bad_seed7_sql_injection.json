@@ -1,0 +1,81 @@
+{
+  "exported_at": "2026-04-01T12:00:00.000",
+  "entries": [
+    {
+      "date_time": "2026-03-19T05:30:00.000",
+      "mood": "'; DROP TABLE symptom_entries; --",
+      "notes": "SQL injection in mood field",
+      "symptoms": [
+        {
+          "name": "Headache",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "After Wakeup"
+      ]
+    },
+    {
+      "date_time": "2026-03-18T05:00:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "'; DROP TABLE user_symptoms; --",
+      "symptoms": [
+        {
+          "name": "'; DELETE FROM symptom_entries; --",
+          "severity": 2,
+          "severity_label": "Mild"
+        }
+      ],
+      "tags": [
+        "At Work"
+      ]
+    },
+    {
+      "date_time": "2026-03-17T05:15:00.000",
+      "mood": "\ud83d\ude10",
+      "notes": "SQL injection in tag field",
+      "symptoms": [
+        {
+          "name": "Fatigue",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "'; DROP TABLE user_tags; --",
+        "Robert'); DROP TABLE symptom_entries;--"
+      ]
+    },
+    {
+      "date_time": "2026-03-16T05:00:00.000",
+      "mood": "1 OR 1=1",
+      "notes": "' UNION SELECT * FROM symptom_entries --",
+      "symptoms": [
+        {
+          "name": "' OR '1'='1",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "' OR 1=1 --"
+      ]
+    },
+    {
+      "date_time": "2026-03-15T05:30:00.000",
+      "mood": "\ud83d\ude0a",
+      "notes": "SQL injection via severity - Drift should parameterize this",
+      "symptoms": [
+        {
+          "name": "Headache; DROP TABLE symptom_entry_with_symptom",
+          "severity": 3,
+          "severity_label": "Moderate"
+        }
+      ],
+      "tags": [
+        "<script>alert('xss')</script>"
+      ]
+    }
+  ]
+}

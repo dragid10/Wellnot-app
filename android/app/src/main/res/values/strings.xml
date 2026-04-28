@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_moods_label">Today</string>
+    <string name="widget_today_moods_description">See your logged moods for today</string>
+    <string name="widget_add_entry_description">Add new entry</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget layout dimensions (mirrors lib/constants/layout.dart) -->
+    <dimen name="widget_padding">12dp</dimen>
+    <dimen name="widget_corner_radius">16dp</dimen>
+    <dimen name="widget_add_button_size">28dp</dimen>
+    <dimen name="widget_header_bottom_spacing">8dp</dimen>
+    <dimen name="widget_entry_vertical_spacing">4dp</dimen>
+    <dimen name="widget_entry_horizontal_spacing">8dp</dimen>
+
+    <!-- Widget font sizes -->
+    <dimen name="widget_header_font_size">14sp</dimen>
+    <dimen name="widget_time_font_size">13sp</dimen>
+    <dimen name="widget_content_font_size">14sp</dimen>
+    <dimen name="widget_add_button_font_size">18sp</dimen>
+</resources>
