@@ -1,18 +1,22 @@
 // clear_reset_screen.dart: Data clearing and settings reset sub-page.
 //
-// Provides three destructive actions with two-step confirmation dialogs:
-//   1. Clear logged data (entries, custom symptoms/tags from database)
-//   2. Reset app settings (SharedPreferences back to defaults)
-//   3. Clear everything (both database and settings)
+// Provides four destructive actions with confirmation dialogs:
+//   1. Clear achievements (single confirmation)
+//   2. Clear logged data (two-step confirmation)
+//   3. Reset app settings (two-step confirmation)
+//   4. Clear everything (two-step confirmation)
 //
 // Cross-ref:
 //   - Parent: screens/manage_items_screen.dart (navigates here)
-//   - Database: services/database.dart (clearAllData)
+//   - Database: services/database.dart (clearAllData, clearAchievements)
 //   - Preferences: services/preferences_service.dart (resetAll)
 //   - Notification service: services/notification_service.dart (applySettings)
+//   - Achievement scan flag: constants/defaults.dart (prefKeyAchievementsScanned)
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../constants/defaults.dart';
 import '../../constants/layout.dart';
 import '../../services/database.dart';
 import '../../services/notification_service.dart';
@@ -156,6 +160,52 @@ class _ClearResetScreenState extends State<ClearResetScreen> {
     }
   }
 
+  /// Clears all unlocked achievements and resets the retroactive scan flag.
+  Future<void> _clearAchievements() async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog.adaptive(
+        title: const Text('Clear Achievements?'),
+        content: const Text(
+          'This will reset all achievement progress. '
+          'Your symptom data will not be affected. '
+          'You can re-earn achievements by continuing to use the app.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              'Clear',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await _database.clearAchievements();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(prefKeyAchievementsScanned);
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Achievements cleared.')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to clear achievements: $error')),
+        );
+      }
+    }
+  }
+
   /// Clears all data AND resets all settings.
   Future<void> _clearEverything() async {
     final confirmed = await _confirmTwice(
@@ -203,6 +253,17 @@ class _ClearResetScreenState extends State<ClearResetScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ListTile(
+                leading: const Icon(Icons.restart_alt, color: Colors.red),
+                title: const Text(
+                  'Clear Achievements',
+                  style: TextStyle(color: Colors.red),
+                ),
+                subtitle: const Text('Reset all achievement progress'),
+                contentPadding: EdgeInsets.zero,
+                onTap: _clearAchievements,
+              ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: const Text(

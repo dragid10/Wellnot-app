@@ -12,6 +12,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'constants/defaults.dart' as defaults;
+import 'services/achievement_service.dart';
 import 'services/database.dart';
 import 'services/home_widget_service.dart';
 import 'services/notification_service.dart';
@@ -53,6 +56,9 @@ Future<void> main() async {
 
   // Handle deep links from home screen widget taps.
   _initHomeWidgetLinks(database);
+
+  // Run one-time retroactive achievement scan after update.
+  _initAchievements(database);
 }
 
 /// Handles a deep link URI from a widget tap.
@@ -95,6 +101,23 @@ void _initHomeWidgetLinks(AppDatabase database) {
   HomeWidget.initiallyLaunchedFromHomeWidget()
       .then((uri) => _handleWidgetUri(uri, database));
   HomeWidget.widgetClicked.listen((uri) => _handleWidgetUri(uri, database));
+}
+
+/// Runs the one-time retroactive achievement scan on first launch after
+/// the achievement system is added. Uses a SharedPreferences flag to
+/// ensure it only runs once.
+Future<void> _initAchievements(AppDatabase database) async {
+  if (!PreferencesService.achievementsEnabledNotifier.value) return;
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final scanned = prefs.getBool(defaults.prefKeyAchievementsScanned) ?? false;
+    if (!scanned) {
+      await AchievementService.retroactiveScan(database);
+      await prefs.setBool(defaults.prefKeyAchievementsScanned, true);
+    }
+  } catch (error) {
+    debugPrint('Achievement scan failed: $error');
+  }
 }
 
 /// Sets up the notification service, tap handler, and applies persisted

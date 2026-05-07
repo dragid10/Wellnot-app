@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:symptom_tracker_app/constants/defaults.dart';
+import 'package:symptom_tracker_app/constants/layout.dart';
 import 'package:symptom_tracker_app/models/symptom_models.dart';
 import 'package:symptom_tracker_app/screens/entry_screen.dart';
 import 'package:symptom_tracker_app/services/database.dart';
@@ -323,13 +326,15 @@ void main() {
     await tester.tap(find.text('😊'));
     await tester.pump();
 
-    // Scroll to and tap the save button.
+    // Scroll to and tap the save button. The save flow includes async
+    // achievement checks (AchievementService.checkAfterSave), so wrap the
+    // tap and delay in runAsync to let all DB futures resolve.
     await tester.ensureVisible(find.text('Add Entry'));
     await tester.pump();
-    await tester.tap(find.text('Add Entry'));
-    await tester.runAsync(
-      () => Future.delayed(const Duration(milliseconds: 100)),
-    );
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Add Entry'));
+      await Future.delayed(const Duration(milliseconds: 500));
+    });
     await tester.pump();
 
     // Verify the entry was saved to DB with default severity (3).
@@ -339,5 +344,194 @@ void main() {
     expect(entries.first.symptoms.first.name, 'Headache');
     expect(entries.first.symptoms.first.severity, 3);
     await db.close();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Chip group collapse (#140)
+  // ---------------------------------------------------------------------------
+
+  group('chip group collapse', () {
+    testWidgets(
+        'As a user, I expect all symptoms to be visible when total count is at or below the threshold',
+        (tester) async {
+      final db = await pumpEntry(tester);
+
+      // Default symptoms (6) are well under the threshold (20).
+      for (final name in defaultSymptoms) {
+        expect(find.text(name), findsOneWidget);
+      }
+      // No "Show all" chip should appear.
+      expect(find.textContaining('Show all'), findsNothing);
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect a "Show all" chip when symptoms exceed the collapse threshold',
+        (tester) async {
+      final db = createTestDatabase();
+      // Add enough custom symptoms to exceed threshold.
+      // 6 defaults + 25 custom = 31 total, well above 20.
+      for (var index = 0; index < 25; index++) {
+        await db.addSymptom('CustomSymptom$index');
+      }
+
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: const MaterialApp(home: SymptomEntryScreen()),
+        ),
+      );
+      await tester.runAsync(
+        () => Future.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+
+      // "Show all" chip should be present.
+      expect(find.textContaining('Show all'), findsOneWidget);
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect tapping "Show all" to reveal all symptoms and show "Show less"',
+        (tester) async {
+      final db = createTestDatabase();
+      for (var index = 0; index < 25; index++) {
+        await db.addSymptom('CustomSymptom$index');
+      }
+
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: const MaterialApp(home: SymptomEntryScreen()),
+        ),
+      );
+      await tester.runAsync(
+        () => Future.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap "Show all".
+      await tester.ensureVisible(find.textContaining('Show all'));
+      await tester.pump();
+      await tester.tap(find.textContaining('Show all'));
+      await tester.pump();
+
+      // "Show less" should now appear, "Show all" should be gone.
+      expect(find.text('Show less'), findsOneWidget);
+      expect(find.textContaining('Show all'), findsNothing);
+
+      // All custom symptoms should now be findable in the widget tree.
+      for (var index = 0; index < 25; index++) {
+        expect(find.text('CustomSymptom$index'), findsOneWidget);
+      }
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect selected symptoms to remain visible when collapsed',
+        (tester) async {
+      final db = createTestDatabase();
+      for (var index = 0; index < 25; index++) {
+        await db.addSymptom('CustomSymptom$index');
+      }
+
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: const MaterialApp(home: SymptomEntryScreen()),
+        ),
+      );
+      await tester.runAsync(
+        () => Future.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+
+      // First expand so we can tap a chip that might be hidden when collapsed.
+      await tester.ensureVisible(find.textContaining('Show all'));
+      await tester.pump();
+      await tester.tap(find.textContaining('Show all'));
+      await tester.pump();
+
+      // Select the last custom symptom (which would be hidden when collapsed).
+      await tester.ensureVisible(find.text('CustomSymptom24'));
+      await tester.pump();
+      await tester.tap(find.text('CustomSymptom24'));
+      await tester.pump();
+
+      // Collapse again.
+      await tester.ensureVisible(find.text('Show less'));
+      await tester.pump();
+      await tester.tap(find.text('Show less'));
+      await tester.pump();
+
+      // The selected symptom should remain visible even when collapsed.
+      // It appears in both the chip group and the severity widget below.
+      expect(find.text('CustomSymptom24'), findsAtLeast(1));
+      // "Show all" should reappear.
+      expect(find.textContaining('Show all'), findsOneWidget);
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect pinned symptoms to remain visible when collapsed',
+        (tester) async {
+      // Set pinned symptom in SharedPreferences before creating widget.
+      // ItemPreferencesService stores lists as JSON-encoded strings.
+      SharedPreferences.setMockInitialValues({
+        'pinned_symptoms': jsonEncode(['CustomSymptom24']),
+      });
+
+      final db = createTestDatabase();
+      for (var index = 0; index < 25; index++) {
+        await db.addSymptom('CustomSymptom$index');
+      }
+
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: const MaterialApp(home: SymptomEntryScreen()),
+        ),
+      );
+      await tester.runAsync(
+        () => Future.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+
+      // The pinned symptom should be visible even in collapsed state.
+      expect(find.text('CustomSymptom24'), findsOneWidget);
+      // "Show all" should still be present since unpinned count exceeds threshold.
+      expect(find.textContaining('Show all'), findsOneWidget);
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect the "Show all" chip to display the correct hidden count',
+        (tester) async {
+      final db = createTestDatabase();
+      // 6 defaults + 25 custom = 31 total unpinned unselected.
+      // threshold = 20, so hidden = 31 - 20 = 11.
+      for (var index = 0; index < 25; index++) {
+        await db.addSymptom('CustomSymptom$index');
+      }
+
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: const MaterialApp(home: SymptomEntryScreen()),
+        ),
+      );
+      await tester.runAsync(
+        () => Future.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+
+      final totalItems = defaultSymptoms.length + 25;
+      final expectedHidden = totalItems - chipGroupCollapsedThreshold;
+      expect(
+        find.text('Show all ($expectedHidden more)'),
+        findsOneWidget,
+      );
+      await db.close();
+    });
   });
 }

@@ -299,6 +299,57 @@ class PreferencesService {
   }
 
   // ---------------------------------------------------------------------------
+  // Achievements
+  // ---------------------------------------------------------------------------
+
+  /// Whether the achievement system is enabled. Updated by
+  /// [loadAchievementsEnabled] and [saveAchievementsEnabled].
+  static final ValueNotifier<bool> achievementsEnabledNotifier =
+      ValueNotifier(defaultAchievementsEnabled);
+
+  /// Loads the achievements enabled preference.
+  static Future<void> loadAchievementsEnabled() async {
+    _loadAchievementsEnabledFrom(await SharedPreferences.getInstance());
+  }
+
+  /// Internal: reads achievements enabled from a pre-acquired [prefs] instance.
+  static void _loadAchievementsEnabledFrom(SharedPreferences prefs) {
+    achievementsEnabledNotifier.value =
+        prefs.getBool(prefKeyAchievementsEnabled) ?? defaultAchievementsEnabled;
+  }
+
+  /// Saves the achievements enabled preference and updates the notifier.
+  static Future<void> saveAchievementsEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefKeyAchievementsEnabled, enabled);
+    achievementsEnabledNotifier.value = enabled;
+  }
+
+  /// Whether achievement unlock notifications (toasts) are shown. Updated by
+  /// [loadAchievementNotifications] and [saveAchievementNotifications].
+  static final ValueNotifier<bool> achievementNotificationsNotifier =
+      ValueNotifier(defaultAchievementNotificationsEnabled);
+
+  /// Loads the achievement notifications preference.
+  static Future<void> loadAchievementNotifications() async {
+    _loadAchievementNotificationsFrom(await SharedPreferences.getInstance());
+  }
+
+  /// Internal: reads achievement notifications from a pre-acquired [prefs].
+  static void _loadAchievementNotificationsFrom(SharedPreferences prefs) {
+    achievementNotificationsNotifier.value =
+        prefs.getBool(prefKeyAchievementNotifications) ??
+            defaultAchievementNotificationsEnabled;
+  }
+
+  /// Saves the achievement notifications preference and updates the notifier.
+  static Future<void> saveAchievementNotifications(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefKeyAchievementNotifications, enabled);
+    achievementNotificationsNotifier.value = enabled;
+  }
+
+  // ---------------------------------------------------------------------------
   // Onboarding walkthrough
   // ---------------------------------------------------------------------------
 
@@ -323,6 +374,33 @@ class PreferencesService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(prefKeyHasSeenOnboarding, seen);
     hasSeenOnboardingNotifier.value = seen;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Coach marks
+  // ---------------------------------------------------------------------------
+
+  /// Whether the user has seen the interactive coach marks on the calendar.
+  /// Updated by [loadHasSeenCoachMarks] and [saveHasSeenCoachMarks].
+  static final ValueNotifier<bool> hasSeenCoachMarksNotifier =
+      ValueNotifier(defaultHasSeenCoachMarks);
+
+  /// Loads the coach-marks-seen flag from SharedPreferences.
+  static Future<void> loadHasSeenCoachMarks() async {
+    _loadHasSeenCoachMarksFrom(await SharedPreferences.getInstance());
+  }
+
+  /// Internal: reads coach marks flag from a pre-acquired [prefs] instance.
+  static void _loadHasSeenCoachMarksFrom(SharedPreferences prefs) {
+    hasSeenCoachMarksNotifier.value =
+        prefs.getBool(prefKeyHasSeenCoachMarks) ?? defaultHasSeenCoachMarks;
+  }
+
+  /// Saves the coach-marks-seen flag and updates the notifier.
+  static Future<void> saveHasSeenCoachMarks(bool seen) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefKeyHasSeenCoachMarks, seen);
+    hasSeenCoachMarksNotifier.value = seen;
   }
 
   // ---------------------------------------------------------------------------
@@ -379,7 +457,10 @@ class PreferencesService {
     _loadShowTagPreviewFrom(prefs);
     _loadAppLockEnabledFrom(prefs);
     _loadAppLockGracePeriodFrom(prefs);
+    _loadAchievementsEnabledFrom(prefs);
+    _loadAchievementNotificationsFrom(prefs);
     _loadHasSeenOnboardingFrom(prefs);
+    _loadHasSeenCoachMarksFrom(prefs);
     _loadEncryptionMigrationFailedFrom(prefs);
   }
 
@@ -403,7 +484,11 @@ class PreferencesService {
     calendarStartDayNotifier.value = defaultCalendarStartDay;
     appLockEnabledNotifier.value = defaultAppLockEnabled;
     appLockGracePeriodNotifier.value = defaultAppLockGracePeriodSeconds;
+    achievementsEnabledNotifier.value = defaultAchievementsEnabled;
+    achievementNotificationsNotifier.value =
+        defaultAchievementNotificationsEnabled;
     hasSeenOnboardingNotifier.value = defaultHasSeenOnboarding;
+    hasSeenCoachMarksNotifier.value = defaultHasSeenCoachMarks;
     encryptionMigrationFailedNotifier.value = defaultEncryptionMigrationFailed;
   }
 }

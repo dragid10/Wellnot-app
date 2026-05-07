@@ -16,11 +16,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../app.dart';
 import '../constants/layout.dart';
 import '../constants/summary.dart';
 import '../models/summary_models.dart';
 import '../models/symptom_models.dart';
+import '../services/achievement_service.dart';
 import '../services/database.dart';
+import '../services/preferences_service.dart';
 import '../widgets/adaptive_pickers.dart';
 import '../widgets/adaptive_segmented_control.dart';
 import 'filtered_entries_screen.dart';
@@ -62,6 +65,17 @@ class _SummaryScreenState extends State<SummaryScreen> {
       _database = context.read<AppDatabase>();
       _initialized = true;
       _loadSummary();
+      _checkSummaryAchievement();
+    }
+  }
+
+  /// Checks whether viewing the summary screen unlocks the Insight Seeker
+  /// achievement.
+  Future<void> _checkSummaryAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final unlocked = await AchievementService.checkAfterSummaryView(_database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
     }
   }
 

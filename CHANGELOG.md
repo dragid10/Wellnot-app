@@ -1,6 +1,12 @@
-## 1.11.2 - 2026-04-23
+## 1.12.0 - 2026-05-01
+### feature
+- Added a guided walkthrough to help new users discover key features
+- Added Privacy Policy, Terms of Service, and Rate Wellnot in settings
 ### fix
-- Fixed rare crash on Android when the OS restarts the Quick Add notification service.## 1.11.1 - 2026-04-21
+- Cancelling a data export no longer shows an error message## 1.11.2 - 2026-04-23
+### fix
+- Fixed rare crash on Android when the OS restarts the Quick Add notification service.
+## 1.11.1 - 2026-04-21
 ### fix
 - Database is now reliably excluded from iCloud backup on iOS.
 ## 1.11.0 - 2026-04-18

@@ -13,9 +13,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../app.dart';
 import '../constants/defaults.dart';
 import '../constants/layout.dart';
+import '../services/achievement_service.dart';
 import '../services/item_preferences_service.dart';
+import '../services/preferences_service.dart';
 import '../widgets/info_tooltip.dart';
 import '../services/database.dart';
 
@@ -129,6 +132,7 @@ class _ManageListScreenState extends State<ManageListScreen> {
 
   /// Toggles the hidden state of a default item.
   Future<void> _toggleHideItem(String name) async {
+    final wasHidden = _hiddenItems.contains(name);
     final updated = _isSymptom
         ? await ItemPreferencesService.toggleHideSymptom(name)
         : await ItemPreferencesService.toggleHideTag(name);
@@ -136,6 +140,9 @@ class _ManageListScreenState extends State<ManageListScreen> {
       setState(() {
         _hiddenItems = updated;
       });
+      if (!wasHidden) {
+        _checkHideAchievement();
+      }
     }
   }
 
@@ -153,6 +160,7 @@ class _ManageListScreenState extends State<ManageListScreen> {
 
   /// Toggles the pinned state of an item.
   Future<void> _togglePinItem(String name) async {
+    final wasPinned = _pinnedItems.contains(name);
     final updated = _isSymptom
         ? await ItemPreferencesService.togglePinSymptom(name)
         : await ItemPreferencesService.togglePinTag(name);
@@ -160,6 +168,27 @@ class _ManageListScreenState extends State<ManageListScreen> {
       setState(() {
         _pinnedItems = updated;
       });
+      if (!wasPinned) {
+        _checkPinAchievement();
+      }
+    }
+  }
+
+  Future<void> _checkHideAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final database = context.read<AppDatabase>();
+    final unlocked = await AchievementService.checkAfterHide(database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
+    }
+  }
+
+  Future<void> _checkPinAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final database = context.read<AppDatabase>();
+    final unlocked = await AchievementService.checkAfterPin(database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
     }
   }
 

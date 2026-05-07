@@ -11,10 +11,14 @@
 //   - Database: services/database.dart (getAllEntriesWithDetails)
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app.dart';
 import '../../constants/layout.dart';
+import '../../services/achievement_service.dart';
 import '../../services/database.dart';
 import '../../services/export_service.dart';
+import '../../services/preferences_service.dart';
 
 /// Sub-page for choosing an export format and exporting symptom data.
 class ExportDataScreen extends StatefulWidget {
@@ -55,7 +59,26 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Export saved successfully')),
           );
+          if (PreferencesService.achievementsEnabledNotifier.value) {
+            final unlocked =
+                await AchievementService.checkAfterExport(_database);
+            if (unlocked.isNotEmpty) {
+              notifyAchievementsUnlocked(unlocked);
+            }
+          }
         }
+      }
+    } on PlatformException catch (platformError) {
+      // file_picker throws PlatformException when the user cancels the
+      // save dialog — not a real error, so silently ignore it.
+      if (platformError.code == 'FileSaver' ||
+          (platformError.message?.contains('cancel') ?? false)) {
+        return;
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: ${platformError.message}')),
+        );
       }
     } catch (error) {
       if (mounted) {

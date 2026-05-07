@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:symptom_tracker_app/app.dart';
 import 'package:symptom_tracker_app/constants/defaults.dart';
@@ -33,9 +34,12 @@ void main() {
     SharedPreferences.setMockInitialValues({
       prefKeyLastSeenVersion: '1.0.0',
       prefKeyHasSeenOnboarding: true,
+      prefKeyHasSeenCoachMarks: true,
     });
-    // Ensure the onboarding notifier is set so _checkChangelog() isn't guarded.
+    // Ensure the onboarding and coach marks notifiers are set so
+    // _checkChangelog() isn't guarded and coach marks don't trigger.
     PreferencesService.hasSeenOnboardingNotifier.value = true;
+    PreferencesService.hasSeenCoachMarksNotifier.value = true;
     PackageInfo.setMockInitialValues(
       appName: 'Wellnot',
       packageName: 'dev.alexo.symptom_tracker_app',
@@ -86,6 +90,31 @@ void main() {
     await pumpCalendar(tester, db);
 
     expect(find.byIcon(Icons.settings), findsOneWidget);
+    await db.close();
+  });
+
+  // The achievements button should be present in the app bar.
+  testWidgets(
+      'As a user, I expect to see an achievements button in the app bar',
+      (tester) async {
+    final db = createTestDatabase();
+    await pumpCalendar(tester, db);
+
+    expect(find.byIcon(Icons.emoji_events), findsOneWidget);
+    await db.close();
+  });
+
+  // When achievements are disabled, the trophy icon should be hidden.
+  testWidgets(
+      'As a user, I expect the achievements button to be hidden when achievements are disabled',
+      (tester) async {
+    final db = createTestDatabase();
+    PreferencesService.achievementsEnabledNotifier.value = false;
+    await pumpCalendar(tester, db);
+
+    expect(find.byIcon(Icons.emoji_events), findsNothing);
+
+    PreferencesService.achievementsEnabledNotifier.value = true;
     await db.close();
   });
 
@@ -540,6 +569,202 @@ void main() {
       // Verify version was persisted.
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(prefKeyLastSeenVersion), '1.9.0');
+      await db.close();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Coach marks (showcaseview)
+  // ---------------------------------------------------------------------------
+
+  group('Coach marks', () {
+    // Showcase widgets wrap the calendar, add-entry button, insights button,
+    // and settings button. They are always present in the widget tree, but the
+    // showcase overlay only activates when _maybeStartCoachMarks triggers
+    // after onboarding is complete and hasSeenCoachMarks is false.
+
+    // When coach marks haven't been seen and onboarding is complete, Showcase
+    // widgets should be present in the widget tree wrapping the key UI elements.
+    testWidgets(
+        'As a user, I expect Showcase widgets to exist in the widget tree when coach marks have not been seen and onboarding is complete',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        prefKeyLastSeenVersion: '1.0.0',
+        prefKeyHasSeenOnboarding: true,
+        prefKeyHasSeenCoachMarks: false,
+      });
+      PreferencesService.hasSeenOnboardingNotifier.value = true;
+      PreferencesService.hasSeenCoachMarksNotifier.value = false;
+      PackageInfo.setMockInitialValues(
+        appName: 'Wellnot',
+        packageName: 'dev.alexo.symptom_tracker_app',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+
+      final db = createTestDatabase();
+      await pumpCalendar(tester, db);
+
+      // Advance past the 500ms coach marks delay timer.
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Showcase widgets wrap calendar, FAB, insights, achievements, and
+      // settings buttons. On Linux/Android test platform, the FAB variant is
+      // rendered (not the iOS AppBar button), so we expect 5 Showcase widgets
+      // total: calendar, add-entry FAB, insights, achievements, and settings.
+      expect(find.byType(Showcase), findsAtLeast(5));
+
+      // Reset notifier to avoid leaking state to other tests.
+      PreferencesService.hasSeenCoachMarksNotifier.value = true;
+      await db.close();
+    });
+
+    // When coach marks have already been seen (the default setUp state),
+    // the ShowcaseView should not be actively running an overlay. The
+    // Showcase widgets are still in the tree (they wrap UI elements), but
+    // the overlay tour should not have started.
+    testWidgets(
+        'As a user, I expect no showcase overlay to appear when coach marks have already been seen',
+        (tester) async {
+      // Default setUp already sets hasSeenCoachMarks: true.
+      final db = createTestDatabase();
+      await pumpCalendar(tester, db);
+
+      // Advance past the 500ms delay to ensure _maybeStartCoachMarks would
+      // have triggered if conditions were met.
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Showcase widgets still exist in the tree (they wrap child widgets),
+      // but we should verify no tooltip overlay text is rendered.
+      // Coach mark titles like 'Your Calendar', 'Add Entry', 'Insights',
+      // 'Settings' should NOT appear as overlay tooltips.
+      expect(find.text('Your Calendar'), findsNothing);
+      expect(
+          find.text(
+              'Tap to log symptoms, mood, and tags for the selected day.'),
+          findsNothing);
+      await db.close();
+    });
+
+    // When onboarding hasn't been completed yet, coach marks should not
+    // trigger even if hasSeenCoachMarks is false. The user needs to
+    // finish onboarding before seeing interactive coach marks.
+    testWidgets(
+        'As a user, I expect coach marks to not trigger when onboarding has not been completed even if hasSeenCoachMarks is false',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        prefKeyLastSeenVersion: '1.0.0',
+        prefKeyHasSeenOnboarding: false,
+        prefKeyHasSeenCoachMarks: false,
+      });
+      PreferencesService.hasSeenOnboardingNotifier.value = false;
+      PreferencesService.hasSeenCoachMarksNotifier.value = false;
+      PackageInfo.setMockInitialValues(
+        appName: 'Wellnot',
+        packageName: 'dev.alexo.symptom_tracker_app',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+
+      final db = createTestDatabase();
+      await pumpCalendar(tester, db);
+
+      // Advance past the 500ms delay.
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Coach mark tooltip content should NOT appear — onboarding guard
+      // prevents _maybeStartCoachMarks from starting the showcase.
+      expect(find.text('Your Calendar'), findsNothing);
+      expect(find.text('View trends and patterns in your symptom data.'),
+          findsNothing);
+
+      // Reset notifiers to avoid leaking state to other tests.
+      PreferencesService.hasSeenOnboardingNotifier.value = true;
+      PreferencesService.hasSeenCoachMarksNotifier.value = true;
+      await db.close();
+    });
+
+    // Showcase widgets should have the correct descriptive titles and
+    // descriptions for each highlighted UI element.
+    testWidgets(
+        'As a user, I expect coach mark Showcase widgets to have descriptive titles for each highlighted element',
+        (tester) async {
+      // Use the default setUp (coach marks suppressed) so we can inspect
+      // the Showcase widget properties without the overlay interfering.
+      final db = createTestDatabase();
+      await pumpCalendar(tester, db);
+
+      // Find all Showcase widgets in the tree.
+      final showcaseWidgets = tester.widgetList<Showcase>(
+        find.byType(Showcase),
+      );
+
+      // Extract all titles from the Showcase widgets.
+      final titles = showcaseWidgets
+          .map((showcase) => showcase.title)
+          .where((title) => title != null)
+          .toList();
+
+      // Verify the expected coach mark titles are present.
+      expect(titles, contains('Your Calendar'));
+      expect(titles, contains('Add Entry'));
+      expect(titles, contains('Insights'));
+      expect(titles, contains('Achievements'));
+      expect(titles, contains('Settings'));
+
+      await db.close();
+    });
+
+    testWidgets(
+        'As a user, I expect coach marks to not appear when another screen is pushed on top of the calendar - regression test for notification deep link bug',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        prefKeyLastSeenVersion: '1.0.0',
+        prefKeyHasSeenOnboarding: true,
+        prefKeyHasSeenCoachMarks: false,
+      });
+      PreferencesService.hasSeenOnboardingNotifier.value = true;
+      PreferencesService.hasSeenCoachMarksNotifier.value = false;
+      PackageInfo.setMockInitialValues(
+        appName: 'Wellnot',
+        packageName: 'dev.alexo.symptom_tracker_app',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+
+      final db = createTestDatabase();
+      await pumpCalendar(tester, db);
+
+      // Push another route on top before the 500ms coach marks timer fires
+      // (simulates the notification handler pushing EntryScreen).
+      final navigatorState = tester.state<NavigatorState>(
+        find.byType(Navigator),
+      );
+      navigatorState.push(
+        MaterialPageRoute(
+          builder: (context) => const Scaffold(
+            body: Center(child: Text('Entry Screen')),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // Advance past the 500ms coach marks delay timer.
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Coach mark tooltip content should NOT appear — CalendarScreen is no
+      // longer the topmost route so coach marks should be suppressed.
+      expect(find.text('Your Calendar'), findsNothing);
+      expect(
+          find.text(
+              'Tap to log symptoms, mood, and tags for the selected day.'),
+          findsNothing);
+
+      // Reset notifiers to avoid leaking state to other tests.
+      PreferencesService.hasSeenCoachMarksNotifier.value = true;
       await db.close();
     });
   });

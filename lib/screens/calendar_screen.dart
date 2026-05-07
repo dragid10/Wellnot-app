@@ -9,13 +9,20 @@
 //   - Uses AppDatabase.getAllEntriesWithDetails() from services/database.dart
 //   - Entry model: models/symptom_models.dart (SymptomEntryModel)
 //   - Database obtained via Provider (see main.dart)
+//   - Coach marks: showcaseview package, preferences_service.dart
+//     (hasSeenCoachMarksNotifier), constants/defaults.dart
+//     (prefKeyHasSeenCoachMarks)
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../app.dart';
+import '../constants/achievements.dart';
 import '../constants/encryption_recovery.dart';
 import '../constants/layout.dart';
 import '../services/encryption_recovery_service.dart';
@@ -24,6 +31,7 @@ import '../models/symptom_models.dart';
 import '../services/changelog_service.dart';
 import '../services/database.dart';
 import '../widgets/changelog_dialog.dart';
+import 'achievements_screen.dart';
 import 'entry_screen.dart';
 import 'detail_screen.dart';
 import 'manage_items_screen.dart';
@@ -54,6 +62,45 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late AppDatabase _database;
   bool _initialized = false;
 
+  // ---------------------------------------------------------------------------
+  // Coach marks (showcaseview)
+  //
+  // Interactive tooltips that highlight key UI elements on the calendar screen.
+  // Shown once after the user completes the onboarding walkthrough (or on first
+  // load for existing users who haven't seen them yet). The seen-flag is
+  // persisted via PreferencesService.hasSeenCoachMarksNotifier.
+  //
+  // Cross-ref:
+  //   - Preference keys: constants/defaults.dart (prefKeyHasSeenCoachMarks)
+  //   - Preference load/save: services/preferences_service.dart
+  //   - Onboarding trigger: app.dart (_completeOnboarding)
+  // ---------------------------------------------------------------------------
+
+  /// ShowcaseView controller — registered in initState, unregistered in dispose.
+  late final ShowcaseView _showcaseView;
+
+  /// GlobalKey for the calendar widget showcase step.
+  final GlobalKey _calendarKey = GlobalKey();
+
+  /// GlobalKey for the add-entry button showcase step.
+  /// Shared between the Android FAB and iOS AppBar button since they
+  /// are mutually exclusive (only one is in the widget tree at a time).
+  final GlobalKey _addEntryKey = GlobalKey();
+
+  /// GlobalKey for the summary/insights button showcase step.
+  final GlobalKey _summaryKey = GlobalKey();
+
+  /// GlobalKey for the achievements button showcase step.
+  /// Skipped automatically when achievements are disabled (widget not in tree).
+  final GlobalKey _achievementsKey = GlobalKey();
+
+  /// GlobalKey for the settings button showcase step.
+  final GlobalKey _settingsKey = GlobalKey();
+
+  /// Timer for the coach marks startup delay. Stored so it can be cancelled
+  /// in [dispose] to avoid pending-timer assertions in widget tests.
+  Timer? _coachMarksTimer;
+
   @override
   void initState() {
     super.initState();
@@ -61,18 +108,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
     // Listen for entry changes from any source (e.g., persistent notification).
     entriesChangedNotifier.addListener(_loadEvents);
+    achievementUnlockedNotifier.addListener(_showAchievementToast);
+
+    // Register the showcase controller for interactive coach marks.
+    // skipIfTargetNotPresent handles platform-conditional widgets (e.g., FAB
+    // on Android vs AppBar button on iOS) by skipping missing targets.
+    _showcaseView = ShowcaseView.register(
+      onFinish: _onCoachMarksFinished,
+      onDismiss: (_) => _onCoachMarksFinished(),
+      skipIfTargetNotPresent: true,
+    );
+
+    // Listen for onboarding completion so the changelog and coach marks
+    // trigger in sequence after the user finishes the walkthrough.
+    PreferencesService.hasSeenOnboardingNotifier.addListener(
+      _onOnboardingCompleted,
+    );
 
     // Show the "What's New" or welcome dialog after the first frame renders,
-    // and check for encryption migration issues.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // check for encryption migration issues, and trigger coach marks for
+    // existing users who haven't seen them yet.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _checkEncryptionMigrationFlag();
-      _checkChangelog();
+      await _checkChangelog();
+      _maybeStartCoachMarks();
     });
   }
 
   @override
   void dispose() {
     entriesChangedNotifier.removeListener(_loadEvents);
+    achievementUnlockedNotifier.removeListener(_showAchievementToast);
+    PreferencesService.hasSeenOnboardingNotifier.removeListener(
+      _onOnboardingCompleted,
+    );
+    _coachMarksTimer?.cancel();
+    _showcaseView.unregister();
     super.dispose();
   }
 
@@ -137,6 +208,90 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  /// Queue of achievement IDs waiting to be shown as toasts.
+  final List<String> _achievementToastQueue = [];
+
+  /// Whether a toast is currently being displayed.
+  bool _isShowingAchievementToast = false;
+
+  /// Shows congratulatory SnackBars for each newly unlocked achievement,
+  /// one at a time. Each toast auto-dismisses after [achievementToastDuration],
+  /// then the next one in the queue appears.
+  void _showAchievementToast() {
+    final achievementIds = achievementUnlockedNotifier.value;
+    if (achievementIds.isEmpty || !mounted) return;
+    if (!PreferencesService.achievementNotificationsNotifier.value) return;
+
+    _achievementToastQueue.addAll(achievementIds);
+    if (!_isShowingAchievementToast) {
+      _showNextAchievementToast();
+    }
+  }
+
+  /// Pops the next achievement from the queue and shows its toast.
+  void _showNextAchievementToast() {
+    if (_achievementToastQueue.isEmpty || !mounted) {
+      _isShowingAchievementToast = false;
+      return;
+    }
+
+    _isShowingAchievementToast = true;
+    final achievementId = _achievementToastQueue.removeAt(0);
+
+    final definition = allAchievements.where(
+      (achievement) => achievement.id == achievementId,
+    );
+    if (definition.isEmpty) {
+      _showNextAchievementToast();
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.emoji_events,
+                    color: Theme.of(context).colorScheme.inversePrimary),
+                const SizedBox(width: spacingSm),
+                Expanded(
+                    child: Text(
+                        'Achievement unlocked: ${definition.first.unlockedName ?? definition.first.name}')),
+              ],
+            ),
+            duration: achievementToastDuration,
+            persist: false,
+            action: SnackBarAction(
+              label: 'View',
+              onPressed: () {
+                _navigateToAchievement(achievementId);
+              },
+            ),
+          ),
+        )
+        .closed
+        .then((_) {
+      _showNextAchievementToast();
+    });
+  }
+
+  /// Navigates to the achievement in the achievements screen.
+  /// If the screen is already open, scrolls to the achievement instead
+  /// of pushing a duplicate.
+  void _navigateToAchievement(String achievementId) {
+    if (AchievementsScreen.isMounted) {
+      achievementScrollToNotifier.value = achievementId;
+    } else {
+      achievementScrollToNotifier.value = achievementId;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AchievementsScreen(),
+        ),
+      );
+    }
+  }
+
   /// Returns the list of entries for a given [day], or an empty list if none.
   ///
   /// Used by TableCalendar's `eventLoader` to render dot markers, and by
@@ -165,26 +320,76 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: const Text('Wellnot'),
         actions: [
           // Summary button — opens the date range summary screen.
-          IconButton(
-            icon: const Icon(Icons.insights),
-            tooltip: 'Summary',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SummaryScreen(),
+          // Wrapped in Showcase for the coach marks tour.
+          Showcase(
+            key: _summaryKey,
+            title: 'Insights',
+            description: 'View trends and patterns in your symptom data.',
+            tooltipBackgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+            textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            child: IconButton(
+              icon: const Icon(Icons.insights),
+              tooltip: 'Summary',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SummaryScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+          // Achievements button — opens the achievements screen.
+          // Hidden when achievements are disabled in settings.
+          // Wrapped in Showcase for the coach marks tour.
+          ValueListenableBuilder<bool>(
+            valueListenable: PreferencesService.achievementsEnabledNotifier,
+            builder: (context, enabled, _) {
+              if (!enabled) return const SizedBox.shrink();
+              return Showcase(
+                key: _achievementsKey,
+                title: 'Achievements',
+                description:
+                    'Track your milestones and unlock badges as you log entries.',
+                tooltipBackgroundColor:
+                    Theme.of(context).colorScheme.primaryContainer,
+                textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                child: IconButton(
+                  icon: const Icon(Icons.emoji_events),
+                  tooltip: 'Achievements',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AchievementsScreen(),
+                      ),
+                    );
+                  },
                 ),
               );
             },
           ),
           // Add entry button in AppBar — iOS only (iOS doesn't use FABs).
           // Android uses a FloatingActionButton instead (see below).
+          // Shares _addEntryKey with the Android FAB for coach marks
+          // since only one is in the tree at a time.
           if (Theme.of(context).platform == TargetPlatform.iOS &&
               _selectedDay != null &&
               !_selectedDay!.isAfter(DateTime.now()))
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => _navigateToNewEntry(),
+            Showcase(
+              key: _addEntryKey,
+              title: 'Add Entry',
+              description:
+                  'Tap to log symptoms, mood, and tags for the selected day.',
+              tooltipBackgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () => _navigateToNewEntry(),
+              ),
             ),
           // "Today" button — jumps back to the current date.
           // Always visible, but greyed out when already viewing today.
@@ -206,19 +411,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   },
           ),
           // Settings button — navigates to the settings screen.
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ManageItemsScreen(),
-                ),
-              );
-              // Reload events and update widgets in case entries were modified
-              // (e.g., Clear All Data).
-              notifyEntriesChanged();
-            },
+          // Wrapped in Showcase for the coach marks tour.
+          Showcase(
+            key: _settingsKey,
+            title: 'Settings',
+            description: 'Manage symptoms, tags, reminders, appearance, '
+                'and more.',
+            tooltipBackgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+            textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            child: IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageItemsScreen(),
+                  ),
+                );
+                // Reload events and update widgets in case entries were
+                // modified (e.g., Clear All Data).
+                notifyEntriesChanged();
+              },
+            ),
           ),
         ],
       ),
@@ -226,90 +441,99 @@ class _CalendarScreenState extends State<CalendarScreen> {
         top: false,
         child: Column(
           children: [
-            // Calendar widget — rebuilds when the start day preference or
-            // system start day changes. Uses Listenable.merge to listen to
-            // both notifiers in a single builder instead of nesting.
-            ListenableBuilder(
-              listenable: Listenable.merge([
-                PreferencesService.calendarStartDayNotifier,
-                PreferencesService.systemStartDayNotifier,
-              ]),
-              builder: (context, _) {
-                final screenHeight = MediaQuery.of(context).size.height;
-                final isCompact =
-                    screenHeight < calendarCompactHeightBreakpoint;
-                return TableCalendar<SymptomEntryModel>(
-                  firstDay: DateTime.utc(2000, 1, 1),
-                  lastDay: DateTime.now(),
-                  focusedDay: _focusedDay,
-                  // Adapt row height to screen size so smaller devices
-                  // (e.g., Galaxy S9) leave more room for the entry list.
-                  // See #117. Day-of-week height stays above 16.0 to
-                  // avoid label clipping (#71).
-                  rowHeight: isCompact
-                      ? calendarRowHeightCompact
-                      : calendarRowHeightDefault,
-                  daysOfWeekHeight: isCompact
-                      ? calendarDaysOfWeekHeightCompact
-                      : calendarDaysOfWeekHeightDefault,
-                  startingDayOfWeek: PreferencesService.resolveStartDay(
-                    PreferencesService.calendarStartDayNotifier.value,
-                  ),
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                  onDaySelected: _onDaySelected,
-                  eventLoader: _getEventsForDay,
-                  // Lock to month view — the format toggle button ("2 weeks")
-                  // is hidden since the app only uses the month view.
-                  availableCalendarFormats: const {
-                    CalendarFormat.month: 'Month'
-                  },
-                  // Disable future dates — users can only log for today or past days.
-                  enabledDayPredicate: (day) {
-                    final now = DateTime.now();
-                    final today = DateTime(now.year, now.month, now.day);
-                    final checkDay = DateTime(day.year, day.month, day.day);
-                    return !checkDay.isAfter(today);
-                  },
-                  // Calendar styling — uses Material 3 color scheme tokens.
-                  calendarStyle: CalendarStyle(
-                    // Use onSurfaceVariant for marker dots — a neutral tone
-                    // that's visible in both light and dark mode without
-                    // blending into the primary-colored selected day bubble.
-                    markerDecoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      shape: BoxShape.circle,
+            // Calendar widget — wrapped in Showcase for the coach marks
+            // tour, then a ListenableBuilder that rebuilds when the start
+            // day preference or system start day changes.
+            Showcase(
+              key: _calendarKey,
+              title: 'Your Calendar',
+              description: 'Tap any day to see your entries. '
+                  'Days with dots have logged symptoms.',
+              tooltipBackgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              child: ListenableBuilder(
+                listenable: Listenable.merge([
+                  PreferencesService.calendarStartDayNotifier,
+                  PreferencesService.systemStartDayNotifier,
+                ]),
+                builder: (context, _) {
+                  final screenHeight = MediaQuery.of(context).size.height;
+                  final isCompact =
+                      screenHeight < calendarCompactHeightBreakpoint;
+                  return TableCalendar<SymptomEntryModel>(
+                    firstDay: DateTime.utc(2000, 1, 1),
+                    lastDay: DateTime.now(),
+                    focusedDay: _focusedDay,
+                    // Adapt row height to screen size so smaller devices
+                    // (e.g., Galaxy S9) leave more room for the entry list.
+                    // See #117. Day-of-week height stays above 16.0 to
+                    // avoid label clipping (#71).
+                    rowHeight: isCompact
+                        ? calendarRowHeightCompact
+                        : calendarRowHeightDefault,
+                    daysOfWeekHeight: isCompact
+                        ? calendarDaysOfWeekHeightCompact
+                        : calendarDaysOfWeekHeightDefault,
+                    startingDayOfWeek: PreferencesService.resolveStartDay(
+                      PreferencesService.calendarStartDayNotifier.value,
                     ),
-                    todayDecoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      shape: BoxShape.circle,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: _onDaySelected,
+                    eventLoader: _getEventsForDay,
+                    // Lock to month view — the format toggle button ("2 weeks")
+                    // is hidden since the app only uses the month view.
+                    availableCalendarFormats: const {
+                      CalendarFormat.month: 'Month'
+                    },
+                    // Disable future dates — users can only log for today or past days.
+                    enabledDayPredicate: (day) {
+                      final now = DateTime.now();
+                      final today = DateTime(now.year, now.month, now.day);
+                      final checkDay = DateTime(day.year, day.month, day.day);
+                      return !checkDay.isAfter(today);
+                    },
+                    // Calendar styling — uses Material 3 color scheme tokens.
+                    calendarStyle: CalendarStyle(
+                      // Use onSurfaceVariant for marker dots — a neutral tone
+                      // that's visible in both light and dark mode without
+                      // blending into the primary-colored selected day bubble.
+                      markerDecoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        shape: BoxShape.circle,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      selectedDecoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      // Weekends use the same text color as weekdays (no special styling).
+                      weekendDecoration: const BoxDecoration(
+                        color: Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      weekendTextStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      disabledDecoration: const BoxDecoration(
+                        color: Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      disabledTextStyle: TextStyle(color: Colors.grey.shade600),
                     ),
-                    selectedDecoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    // Weekends use the same text color as weekdays (no special styling).
-                    weekendDecoration: const BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                    weekendTextStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    disabledDecoration: const BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                    disabledTextStyle: TextStyle(color: Colors.grey.shade600),
-                  ),
-                  onPageChanged: (focusedDay) {
-                    setState(() {
-                      _focusedDay = focusedDay;
-                    });
-                    // Reload entries for the newly visible month.
-                    _loadEvents();
-                  },
-                );
-              },
+                    onPageChanged: (focusedDay) {
+                      setState(() {
+                        _focusedDay = focusedDay;
+                      });
+                      // Reload entries for the newly visible month.
+                      _loadEvents();
+                    },
+                  );
+                },
+              ),
             ),
             const Divider(height: 1),
             // Entry list — rebuilds only when the selected day's events change.
@@ -381,12 +605,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
       // FAB to create a new entry — Android only (Material Design pattern).
       // iOS uses an AppBar button instead (see above).
+      // Wrapped in Showcase for coach marks; shares _addEntryKey with the
+      // iOS AppBar button since they are mutually exclusive.
       floatingActionButton: (Theme.of(context).platform != TargetPlatform.iOS &&
               _selectedDay != null &&
               !_selectedDay!.isAfter(DateTime.now()))
-          ? FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () => _navigateToNewEntry(),
+          ? Showcase(
+              key: _addEntryKey,
+              title: 'Add Entry',
+              description:
+                  'Tap to log symptoms, mood, and tags for the selected day.',
+              tooltipBackgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              child: FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () => _navigateToNewEntry(),
+              ),
             )
           : null,
     );
@@ -492,6 +727,55 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Onboarding completion + coach marks trigger logic
+  // ---------------------------------------------------------------------------
+
+  /// Called when the user finishes the onboarding walkthrough.
+  ///
+  /// Shows the "What's New" dialog first (if there are entries for this
+  /// version), then starts the coach marks tour after it's dismissed.
+  void _onOnboardingCompleted() async {
+    await _checkChangelog();
+    _maybeStartCoachMarks();
+  }
+
+  /// Starts the interactive coach marks tour if the user has completed
+  /// onboarding but hasn't seen the coach marks yet.
+  ///
+  /// Called from two paths:
+  ///   1. Post-frame callback in [initState] — covers existing users who
+  ///      update to a version with coach marks (onboarding already done).
+  ///   2. [_onOnboardingCompleted] — covers new users who just finished
+  ///      the onboarding walkthrough on this launch.
+  ///
+  /// A 500ms delay lets the onboarding overlay animate away and the calendar
+  /// UI settle before the showcase overlay appears.
+  void _maybeStartCoachMarks() {
+    if (PreferencesService.hasSeenCoachMarksNotifier.value) return;
+    if (!PreferencesService.hasSeenOnboardingNotifier.value) return;
+
+    _coachMarksTimer?.cancel();
+    _coachMarksTimer = Timer(const Duration(milliseconds: 500), () {
+      final isTopRoute = ModalRoute.of(context)?.isCurrent ?? false;
+      if (mounted && isTopRoute && !_showcaseView.isShowcaseRunning) {
+        _showcaseView.startShowCase([
+          _calendarKey,
+          _addEntryKey,
+          _summaryKey,
+          _achievementsKey,
+          _settingsKey,
+        ]);
+      }
+    });
+  }
+
+  /// Persists that the user has completed (or dismissed) the coach marks,
+  /// so they won't be shown again.
+  void _onCoachMarksFinished() {
+    PreferencesService.saveHasSeenCoachMarks(true);
+  }
+
   /// Shows a toast if the encryption migration has failed, prompting the user
   /// to visit Settings to resolve the issue.
   void _checkEncryptionMigrationFlag() {
@@ -527,12 +811,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final currentVersion = info.version;
 
     // Don't show changelog during the onboarding walkthrough — the overlay
-    // covers this screen. Persist the current version so the changelog
-    // doesn't show on the next launch either.
-    if (!PreferencesService.hasSeenOnboardingNotifier.value) {
-      await ChangelogService.saveLastSeenVersion(currentVersion);
-      return;
-    }
+    // covers this screen. The check will re-run via _onOnboardingCompleted
+    // once the user finishes onboarding.
+    if (!PreferencesService.hasSeenOnboardingNotifier.value) return;
 
     final shouldShow =
         await ChangelogService.shouldShowChangelog(currentVersion);

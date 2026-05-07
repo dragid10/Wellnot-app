@@ -15,8 +15,12 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../app.dart';
 import '../constants/layout.dart';
+import '../services/achievement_service.dart';
+import '../services/database.dart';
 import '../services/preferences_service.dart';
 import '../widgets/adaptive_segmented_control.dart';
 
@@ -88,7 +92,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     try {
       final launched = await launchUrl(uri);
-      if (!launched && mounted) {
+      if (launched && mounted) {
+        _checkFeedbackAchievement();
+      } else if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('No email app found. Please send feedback to '
@@ -96,7 +102,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -105,6 +111,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _checkFeedbackAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final database = context.read<AppDatabase>();
+    final unlocked = await AchievementService.checkAfterFeedback(database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
     }
   }
 

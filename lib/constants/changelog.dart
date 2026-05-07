@@ -58,6 +58,32 @@ class ChangelogEntry {
 /// platform-specific entries — they are grouped under section headers.
 /// Keep descriptions short and user-centric.
 const Map<String, List<ChangelogEntry>> appChangelog = {
+  '1.12.0': [
+    ChangelogEntry(
+      description:
+          'Added a guided walkthrough to help new users discover key features',
+      type: ChangelogEntryType.feature,
+    ),
+    ChangelogEntry(
+      description:
+          'Added Privacy Policy, Terms of Service, and Rate Wellnot in settings',
+      type: ChangelogEntryType.feature,
+    ),
+    ChangelogEntry(
+      description:
+          'Add achievement system with unlockable achievements across streaks, milestones, tracking, and secret categories',
+      type: ChangelogEntryType.feature,
+    ),
+    ChangelogEntry(
+      description: 'Cancelling a data export no longer shows an error message',
+      type: ChangelogEntryType.fix,
+    ),
+    ChangelogEntry(
+      description:
+          'Fixed guided tour appearing on the wrong screen when opening from a notification',
+      type: ChangelogEntryType.fix,
+    ),
+  ],
   '1.11.2': [
     ChangelogEntry(
       description:

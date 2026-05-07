@@ -686,11 +686,78 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
-  // Flow 12: Encryption recovery
+  // Flow 12: Coach marks suppression on deep link
+  // Verifies that coach marks don't appear when another screen is pushed
+  // on top of the calendar (e.g., from a notification tap).
+  // -------------------------------------------------------------------------
+  group('Flow 12: Coach marks suppression on deep link', () {
+    testWidgets(
+        'As a user, I expect coach marks to not appear when I open an entry from a notification',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        prefKeyLastSeenVersion: '1.9.0',
+        prefKeyHasSeenOnboarding: true,
+        prefKeyHasSeenCoachMarks: false,
+      });
+      PreferencesService.hasSeenOnboardingNotifier.value = true;
+      PreferencesService.hasSeenCoachMarksNotifier.value = false;
+      PackageInfo.setMockInitialValues(
+        appName: 'Wellnot',
+        packageName: 'dev.alexo.symptom_tracker_app',
+        version: '1.9.0',
+        buildNumber: '23',
+        buildSignature: '',
+      );
+
+      final db = createTestDatabase();
+      final navigatorKey = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(
+        Provider<AppDatabase>(
+          create: (_) => db,
+          child: MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'Symptom Tracker',
+            theme: ThemeData(
+              useMaterial3: true,
+              colorSchemeSeed: Colors.teal,
+            ),
+            home: const CalendarScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // Simulate a notification tap pushing EntryScreen before the 500ms
+      // coach marks timer fires (mirrors the race condition in main.dart).
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => const Scaffold(
+            body: Center(child: Text('Entry Screen Placeholder')),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Advance past the 500ms coach marks delay timer.
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Coach mark tooltip content should NOT appear on the pushed screen.
+      expect(find.text('Your Calendar'), findsNothing);
+      expect(find.text('View trends and patterns in your symptom data.'),
+          findsNothing);
+
+      // Reset notifiers to avoid leaking state.
+      PreferencesService.hasSeenCoachMarksNotifier.value = true;
+      await db.close();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Flow 13: Encryption recovery
   // When migration fails, the app shows a toast and settings banner guiding
   // the user through the export → confirm → encrypt → import recovery flow.
   // -------------------------------------------------------------------------
-  group('Flow 12: Encryption recovery', () {
+  group('Flow 13: Encryption recovery', () {
     /// Launches the app with the encryption migration failure flag set.
     Future<AppDatabase> launchWithMigrationFailure(WidgetTester tester) async {
       PackageInfo.setMockInitialValues(

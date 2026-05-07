@@ -12,17 +12,23 @@
 //     screens/settings/reminders_settings_screen.dart,
 //     screens/settings/export_data_screen.dart,
 //     screens/settings/import_data_screen.dart,
-//     screens/settings/about_screen.dart
+//     screens/settings/about_screen.dart,
+//     screens/settings/privacy_policy_screen.dart,
+//     screens/settings/terms_of_service_screen.dart
 //   - Item management: screens/manage_list_screen.dart
 //   - Feedback: screens/feedback_screen.dart
 //   - Clear & Reset: screens/settings/clear_reset_screen.dart
 //   - Preferences: services/preferences_service.dart
 //   - Changelog: services/changelog_service.dart, widgets/changelog_dialog.dart
+//   - Store listing: url_launcher (Rate Wellnot tile)
+
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants/defaults.dart';
 import '../constants/encryption_recovery.dart';
 import '../constants/layout.dart';
@@ -38,8 +44,10 @@ import 'settings/clear_reset_screen.dart';
 import 'settings/display_settings_screen.dart';
 import 'settings/export_data_screen.dart';
 import 'settings/import_data_screen.dart';
+import 'settings/privacy_policy_screen.dart';
 import 'settings/reminders_settings_screen.dart';
 import 'settings/security_settings_screen.dart';
+import 'settings/terms_of_service_screen.dart';
 import 'settings/encryption_issue_screen.dart';
 import 'settings/theme_settings_screen.dart';
 
@@ -285,6 +293,52 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
                   onTap: () => _pushReminders(context),
                 ),
 
+                // ── Achievements ────────────────────────────────────────
+                _SectionHeader(title: 'Achievements', style: headerStyle),
+                ValueListenableBuilder<bool>(
+                  valueListenable:
+                      PreferencesService.achievementsEnabledNotifier,
+                  builder: (context, enabled, _) {
+                    return SwitchListTile.adaptive(
+                      secondary: const Icon(Icons.emoji_events_outlined),
+                      title: const Text('Achievements'),
+                      subtitle: const Text('Track and display achievements'),
+                      value: enabled,
+                      contentPadding: EdgeInsets.zero,
+                      onChanged: (value) {
+                        PreferencesService.saveAchievementsEnabled(value);
+                      },
+                    );
+                  },
+                ),
+                ValueListenableBuilder<bool>(
+                  valueListenable:
+                      PreferencesService.achievementsEnabledNotifier,
+                  builder: (context, achievementsEnabled, _) {
+                    return ValueListenableBuilder<bool>(
+                      valueListenable:
+                          PreferencesService.achievementNotificationsNotifier,
+                      builder: (context, notificationsEnabled, _) {
+                        return SwitchListTile.adaptive(
+                          secondary:
+                              const Icon(Icons.notifications_active_outlined),
+                          title: const Text('Achievement Notifications'),
+                          subtitle: const Text(
+                              'Show a toast when you unlock an achievement'),
+                          value: notificationsEnabled && achievementsEnabled,
+                          contentPadding: EdgeInsets.zero,
+                          onChanged: achievementsEnabled
+                              ? (value) {
+                                  PreferencesService
+                                      .saveAchievementNotifications(value);
+                                }
+                              : null,
+                        );
+                      },
+                    );
+                  },
+                ),
+
                 // ── Data ─────────────────────────────────────────────────
                 _SectionHeader(title: 'Data', style: headerStyle),
                 _SettingsTile(
@@ -318,8 +372,36 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
                   ),
                 ),
 
+                // ── Legal ───────────────────────────────────────────────
+                _SectionHeader(title: 'Legal', style: headerStyle),
+                _SettingsTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy Policy',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyScreen(),
+                    ),
+                  ),
+                ),
+                _SettingsTile(
+                  icon: Icons.gavel_outlined,
+                  title: 'Terms of Service',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TermsOfServiceScreen(),
+                    ),
+                  ),
+                ),
+
                 // ── Support ──────────────────────────────────────────────
                 _SectionHeader(title: 'Support', style: headerStyle),
+                _SettingsTile(
+                  icon: Icons.star_outline,
+                  title: 'Rate Wellnot',
+                  onTap: () => _openStoreListing(context),
+                ),
                 _SettingsTile(
                   icon: Icons.feedback_outlined,
                   title: 'Send Feedback',
@@ -382,6 +464,28 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
         ),
       ),
     );
+  }
+
+  /// Opens the app's store listing for rating on the current platform.
+  Future<void> _openStoreListing(BuildContext context) async {
+    final Uri storeUri;
+    if (Platform.isIOS) {
+      storeUri = Uri.parse(
+        'https://apps.apple.com/app/id6759883780?action=write-review',
+      );
+    } else {
+      storeUri = Uri.parse(
+        'https://play.google.com/store/apps/details?id=dev.alexo.symptom_tracker_app',
+      );
+    }
+
+    final launched =
+        await launchUrl(storeUri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open store listing.')),
+      );
+    }
   }
 
   /// Returns a user-friendly label for the given [ThemeMode].

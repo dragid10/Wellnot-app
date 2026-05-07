@@ -7,7 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
-version: 1.11.2+34
+version: 1.12.0+39
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -82,6 +82,7 @@ dependencies:
 
   # Secure storage for database encryption key (Android Keystore / iOS Keychain)
   flutter_secure_storage: ^9.2.4
+  showcaseview: ^5.0.2
 
 dev_dependencies:
   flutter_test:

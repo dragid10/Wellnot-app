@@ -18,6 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
+import 'services/achievement_service.dart';
 import 'services/database.dart';
 import 'services/home_widget_service.dart';
 import 'services/preferences_service.dart';
@@ -49,6 +50,22 @@ void notifyEntriesChanged() {
     HomeWidgetService.updateWidgetData(_widgetDatabase!);
   }
 }
+
+/// Notifier that fires when achievements are newly unlocked.
+/// CalendarScreen listens to this to show congratulatory toasts.
+/// The value is a list of achievement IDs (empty list means no notification).
+final ValueNotifier<List<String>> achievementUnlockedNotifier =
+    ValueNotifier([]);
+
+/// Call this after achievements are unlocked to trigger toasts on the
+/// calendar screen. Pass the full list of newly unlocked IDs.
+void notifyAchievementsUnlocked(List<String> achievementIds) {
+  achievementUnlockedNotifier.value = List.of(achievementIds);
+}
+
+/// Notifier that tells a visible AchievementsScreen to scroll to a specific
+/// achievement. Set by the toast "View" button when the screen is already open.
+final ValueNotifier<String> achievementScrollToNotifier = ValueNotifier('');
 
 class MyApp extends StatefulWidget {
   final AppDatabase database;
@@ -213,7 +230,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  /// Called when the device is shaken — opens the feedback screen.
+  /// Called when the device is shaken — opens the feedback screen and
+  /// checks for the shake feedback achievement.
   void _onShake() {
     if (!PreferencesService.shakeToFeedbackNotifier.value) return;
     navigatorKey.currentState?.push(
@@ -221,6 +239,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         builder: (context) => const FeedbackScreen(),
       ),
     );
+    _checkShakeFeedbackAchievement();
+  }
+
+  Future<void> _checkShakeFeedbackAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final unlocked =
+        await AchievementService.checkAfterShakeFeedback(widget.database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
+    }
   }
 
   /// Called when the user completes or skips the onboarding walkthrough.

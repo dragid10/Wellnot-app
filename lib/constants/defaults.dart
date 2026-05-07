@@ -162,6 +162,12 @@ const bool defaultHasSeenOnboarding = false;
 /// SharedPreferences key for the onboarding-seen flag.
 const String prefKeyHasSeenOnboarding = 'has_seen_onboarding';
 
+/// Whether the user has seen the interactive coach marks on the calendar screen.
+const bool defaultHasSeenCoachMarks = false;
+
+/// SharedPreferences key for the coach-marks-seen flag.
+const String prefKeyHasSeenCoachMarks = 'has_seen_coach_marks';
+
 // ---------------------------------------------------------------------------
 // Encryption migration recovery
 // ---------------------------------------------------------------------------
@@ -196,6 +202,27 @@ const String prefKeyHiddenSymptoms = 'hidden_symptoms';
 
 /// SharedPreferences key for hidden default tag names (JSON string list).
 const String prefKeyHiddenTags = 'hidden_tags';
+
+// ---------------------------------------------------------------------------
+// Achievement system
+// ---------------------------------------------------------------------------
+
+/// SharedPreferences key for the one-time retroactive achievement scan flag.
+/// Set to true after the scan runs, so it only executes once per install.
+const String prefKeyAchievementsScanned = 'achievements_scanned';
+
+/// Whether the achievement system is enabled by default.
+const bool defaultAchievementsEnabled = true;
+
+/// SharedPreferences key for the achievements enabled toggle.
+const String prefKeyAchievementsEnabled = 'achievements_enabled';
+
+/// Whether achievement unlock notifications (toasts) are enabled by default.
+const bool defaultAchievementNotificationsEnabled = true;
+
+/// SharedPreferences key for the achievement notifications toggle.
+const String prefKeyAchievementNotifications =
+    'achievement_notifications_enabled';
 
 // ---------------------------------------------------------------------------
 // Tooltip text

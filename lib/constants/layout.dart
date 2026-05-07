@@ -106,3 +106,19 @@ const double wideScreenBreakpoint = 600.0;
 
 /// Maximum content width for dialogs on wide screens.
 const double dialogMaxWidth = 500.0;
+
+// ---------------------------------------------------------------------------
+// Achievement toast
+// ---------------------------------------------------------------------------
+
+/// How long each achievement toast stays visible before auto-dismissing.
+const Duration achievementToastDuration = Duration(seconds: 3);
+
+// ---------------------------------------------------------------------------
+// Chip group collapse
+// ---------------------------------------------------------------------------
+
+/// Number of non-pinned, non-selected items visible before the chip group
+/// collapses behind a "Show all" toggle. Keeps the entry screen scrollable
+/// on devices with hundreds of symptoms or tags.
+const int chipGroupCollapsedThreshold = 20;

@@ -16,9 +16,13 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
 import 'package:sqlite3/sqlite3.dart' as raw_sqlite;
+import '../../app.dart';
 import '../../constants/build_info.dart';
 import '../../constants/layout.dart';
+import '../../services/achievement_service.dart';
+import '../../services/database.dart';
 import '../../services/encryption_key_service.dart';
 import '../../services/preferences_service.dart';
 
@@ -63,6 +67,16 @@ class _AboutScreenState extends State<AboutScreen> {
     _longPressTimer?.cancel();
     _debugLongPressTimer?.cancel();
     super.dispose();
+  }
+
+  /// Checks the easter egg achievement when the gorilla chef is discovered.
+  Future<void> _checkEasterEggAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final database = context.read<AppDatabase>();
+    final unlocked = await AchievementService.checkAfterEasterEgg(database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
+    }
   }
 
   /// Checks whether the on-disk database file is encrypted by reading
@@ -175,6 +189,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                 ),
                               ),
                             );
+                            _checkEasterEggAchievement();
                           }
                         },
                       );
@@ -222,6 +237,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                 ),
                               ),
                             );
+                            _checkEasterEggAchievement();
                           }
                         },
                       );

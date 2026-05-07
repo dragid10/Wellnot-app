@@ -22,7 +22,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  Future<void> pumpClearReset(WidgetTester tester) async {
+  Future<AppDatabase> pumpClearReset(WidgetTester tester) async {
     final db = createTestDatabase();
     await tester.pumpWidget(
       Provider<AppDatabase>(
@@ -30,17 +30,67 @@ void main() {
         child: const MaterialApp(home: ClearResetScreen()),
       ),
     );
+    return db;
   }
 
   testWidgets(
-      'As a user, I expect to see three options: Clear Logged Data, Reset Settings, and Clear Everything',
+      'As a user, I expect to see four options: Clear Achievements, Clear Logged Data, Reset Settings, and Clear Everything',
       (tester) async {
     await pumpClearReset(tester);
 
     expect(find.text('Clear & Reset'), findsOneWidget);
+    expect(find.text('Clear Achievements'), findsOneWidget);
     expect(find.text('Clear Logged Data'), findsOneWidget);
     expect(find.text('Reset Settings'), findsOneWidget);
     expect(find.text('Clear Everything'), findsOneWidget);
+  });
+
+  testWidgets(
+      'As a user, I expect a confirmation dialog when I tap Clear Achievements',
+      (tester) async {
+    await pumpClearReset(tester);
+
+    await tester.tap(find.text('Clear Achievements'));
+    await tester.pump();
+
+    expect(find.text('Clear Achievements?'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(find.text('Clear'), findsOneWidget);
+  });
+
+  testWidgets(
+      'As a user, I expect cancelling Clear Achievements to not clear achievements',
+      (tester) async {
+    final db = await pumpClearReset(tester);
+    await tester.runAsync(() => db.unlockAchievement('milestone_1', 1));
+
+    await tester.tap(find.text('Clear Achievements'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    final unlocked = await tester.runAsync(() => db.getUnlockedAchievements());
+    expect(unlocked, hasLength(1));
+  });
+
+  testWidgets(
+      'As a user, I expect confirming Clear Achievements to clear all achievements and show a snackbar',
+      (tester) async {
+    final db = await pumpClearReset(tester);
+    await tester.runAsync(() => db.unlockAchievement('milestone_1', 1));
+
+    await tester.tap(find.text('Clear Achievements'));
+    await tester.pumpAndSettle();
+
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Clear'));
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text('Achievements cleared.'), findsOneWidget);
+    final unlocked = await tester.runAsync(() => db.getUnlockedAchievements());
+    expect(unlocked, isEmpty);
   });
 
   testWidgets(

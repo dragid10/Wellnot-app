@@ -32,6 +32,7 @@ import 'preferences_service.dart';
 part 'database.g.dart';
 
 /// Table for symptom entries (each log by the user).
+@TableIndex(name: 'idx_entry_date_time', columns: {#entryDateTime})
 class SymptomEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get entryDateTime => dateTime()();
@@ -53,6 +54,7 @@ class UserTags extends Table {
 
 /// Join table for many-to-many relationship between entries and symptoms.
 /// The `severity` column stores the per-entry severity rating (1–5).
+@TableIndex(name: 'idx_sews_entry_id', columns: {#symptomEntryId})
 class SymptomEntryWithSymptom extends Table {
   IntColumn get symptomEntryId => integer().references(SymptomEntries, #id)();
   IntColumn get userSymptomId => integer().references(UserSymptoms, #id)();
@@ -60,10 +62,31 @@ class SymptomEntryWithSymptom extends Table {
 }
 
 /// Join table for many-to-many relationship between entries and tags.
+@TableIndex(name: 'idx_sewt_entry_id', columns: {#symptomEntryId})
 class SymptomEntryWithTag extends Table {
   IntColumn get symptomEntryId => integer().references(SymptomEntries, #id)();
   IntColumn get userTagId => integer().references(UserTags, #id)();
 }
+
+/// Table for tracking which achievements the user has unlocked.
+/// Achievement definitions live in constants/achievements.dart — this table
+/// only stores the unlock state.
+class UnlockedAchievements extends Table {
+  TextColumn get achievementId => text()();
+  DateTimeColumn get unlockedAt => dateTime()();
+  IntColumn get progress => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {achievementId};
+}
+
+/// Lightweight record for raw unlock data returned by [AppDatabase.getUnlockedAchievements].
+/// Combined model ([Achievement]) is built by [AchievementService.resolveAll].
+typedef UnlockRecord = ({
+  String achievementId,
+  DateTime unlockedAt,
+  int progress
+});
 
 /// Main database class — schema + helper methods.
 ///
@@ -71,6 +94,7 @@ class SymptomEntryWithTag extends Table {
 ///   - Entry CRUD: getAllEntriesWithDetails, saveEntry, deleteEntry
 ///   - Symptom/Tag management: getAllSymptoms, getAllTags, addSymptom, addTag,
 ///     deleteSymptom, deleteTag
+///   - Achievement tracking: getUnlockedAchievements, unlockAchievement, etc.
 ///   - Data management: clearAllData
 @DriftDatabase(tables: [
   SymptomEntries,
@@ -78,6 +102,7 @@ class SymptomEntryWithTag extends Table {
   UserTags,
   SymptomEntryWithSymptom,
   SymptomEntryWithTag,
+  UnlockedAchievements,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -86,7 +111,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -99,6 +124,26 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(
               symptomEntryWithSymptom,
               symptomEntryWithSymptom.severity,
+            );
+          }
+          if (from < 3) {
+            await m.createTable(unlockedAchievements);
+          }
+          if (from < 4) {
+            // Add indexes for frequently filtered/sorted columns.
+            // Speeds up date-range queries (calendar), last-severity
+            // lookups, and entry-to-symptom/tag joins.
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_entry_date_time '
+              'ON symptom_entries (entry_date_time)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_sews_entry_id '
+              'ON symptom_entry_with_symptom (symptom_entry_id)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_sewt_entry_id '
+              'ON symptom_entry_with_tag (symptom_entry_id)',
             );
           }
         },
@@ -306,6 +351,77 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
+  /// Bulk-imports multiple entries in a single transaction with cached
+  /// symptom/tag lookups.
+  ///
+  /// Unlike [saveEntry] (which creates a transaction per entry and does a
+  /// full-table SELECT per getOrCreate call), this method pre-loads all
+  /// existing symptoms and tags into memory, creates new ones on the fly,
+  /// and inserts everything in one transaction. This reduces DB round trips
+  /// from O(entries * items) to O(entries + unique_items).
+  Future<void> importEntries(List<SymptomEntryModel> entries) async {
+    if (entries.isEmpty) return;
+
+    await transaction(() async {
+      // Pre-load existing symptoms and tags into case-insensitive lookup maps.
+      final allSymptoms = await select(userSymptoms).get();
+      final symptomCache = <String, int>{
+        for (final symptom in allSymptoms)
+          symptom.name.toLowerCase(): symptom.id,
+      };
+
+      final allTags = await select(userTags).get();
+      final tagCache = <String, int>{
+        for (final tag in allTags) tag.name.toLowerCase(): tag.id,
+      };
+
+      for (final entry in entries) {
+        final entryId = await into(symptomEntries).insert(
+          SymptomEntriesCompanion(
+            entryDateTime: Value(entry.dateTime),
+            mood: Value(entry.mood),
+            notes: Value(entry.notes?.trim()),
+          ),
+        );
+
+        for (final symptom in entry.symptoms) {
+          final trimmedName = symptom.name.trim();
+          final cacheKey = trimmedName.toLowerCase();
+          var symptomId = symptomCache[cacheKey];
+          if (symptomId == null) {
+            symptomId = await into(userSymptoms)
+                .insert(UserSymptomsCompanion(name: Value(trimmedName)));
+            symptomCache[cacheKey] = symptomId;
+          }
+          await into(symptomEntryWithSymptom).insert(
+            SymptomEntryWithSymptomCompanion(
+              symptomEntryId: Value(entryId),
+              userSymptomId: Value(symptomId),
+              severity: Value(symptom.severity),
+            ),
+          );
+        }
+
+        for (final tag in entry.tags) {
+          final trimmedName = tag.name.trim();
+          final cacheKey = trimmedName.toLowerCase();
+          var tagId = tagCache[cacheKey];
+          if (tagId == null) {
+            tagId = await into(userTags)
+                .insert(UserTagsCompanion(name: Value(trimmedName)));
+            tagCache[cacheKey] = tagId;
+          }
+          await into(symptomEntryWithTag).insert(
+            SymptomEntryWithTagCompanion(
+              symptomEntryId: Value(entryId),
+              userTagId: Value(tagId),
+            ),
+          );
+        }
+      }
+    });
+  }
+
   /// Deletes an entry and all its join-table links in a single transaction.
   Future<void> deleteEntry(int id) async {
     await transaction(() async {
@@ -509,14 +625,134 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // ---------------------------------------------------------------------------
+  // Achievement tracking (#136)
+  // ---------------------------------------------------------------------------
+
+  /// Returns all unlocked achievements as lightweight [UnlockRecord] tuples.
+  Future<List<UnlockRecord>> getUnlockedAchievements() async {
+    final rows = await select(unlockedAchievements).get();
+    return rows
+        .map((row) => (
+              achievementId: row.achievementId,
+              unlockedAt: row.unlockedAt,
+              progress: row.progress,
+            ))
+        .toList();
+  }
+
+  /// Unlocks a single achievement. Uses INSERT OR IGNORE so calling this
+  /// with an already-unlocked ID is a safe no-op.
+  Future<void> unlockAchievement(String achievementId, int progress) async {
+    await into(unlockedAchievements).insert(
+      UnlockedAchievementsCompanion(
+        achievementId: Value(achievementId),
+        unlockedAt: Value(DateTime.now()),
+        progress: Value(progress),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+  }
+
+  /// Batch-unlocks multiple achievements in a single transaction.
+  /// Used by the retroactive scan to insert historical unlocks efficiently.
+  Future<void> unlockAchievements(
+    List<({String id, int progress, DateTime unlockedAt})> batch,
+  ) async {
+    await transaction(() async {
+      for (final item in batch) {
+        await into(unlockedAchievements).insert(
+          UnlockedAchievementsCompanion(
+            achievementId: Value(item.id),
+            unlockedAt: Value(item.unlockedAt),
+            progress: Value(item.progress),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+      }
+    });
+  }
+
+  /// Checks whether a specific achievement is already unlocked.
+  Future<bool> isAchievementUnlocked(String achievementId) async {
+    final row = await (select(unlockedAchievements)
+          ..where((tbl) => tbl.achievementId.equals(achievementId)))
+        .getSingleOrNull();
+    return row != null;
+  }
+
+  /// Returns the total number of symptom entries in the database.
+  /// Uses SQL COUNT(*) to avoid loading all entry data.
+  Future<int> getTotalEntryCount() async {
+    final count = countAll();
+    final query = selectOnly(symptomEntries)..addColumns([count]);
+    final result = await query.getSingle();
+    return result.read(count) ?? 0;
+  }
+
+  /// Returns all unique entry dates (date-only, no time), sorted ascending.
+  /// Used for streak calculation.
+  Future<List<DateTime>> getAllEntryDates() async {
+    final query = selectOnly(symptomEntries)
+      ..addColumns([symptomEntries.entryDateTime])
+      ..orderBy([OrderingTerm.asc(symptomEntries.entryDateTime)]);
+    final rows = await query.get();
+    final dates = rows
+        .map((row) => row.read(symptomEntries.entryDateTime))
+        .where((dateTime) => dateTime != null)
+        .map((dateTime) =>
+            DateTime(dateTime!.year, dateTime.month, dateTime.day))
+        .toSet()
+        .toList();
+    dates.sort();
+    return dates;
+  }
+
+  /// Returns the number of distinct moods used across all entries.
+  Future<int> getDistinctMoodCount() async {
+    final query = selectOnly(symptomEntries, distinct: true)
+      ..addColumns([symptomEntries.mood]);
+    final rows = await query.get();
+    return rows.length;
+  }
+
+  /// Returns true if any entry has at least one tag linked.
+  Future<bool> hasEntriesWithTags() async {
+    final count = countAll();
+    final query = selectOnly(symptomEntryWithTag)..addColumns([count]);
+    final result = await query.getSingle();
+    return (result.read(count) ?? 0) > 0;
+  }
+
+  /// Returns true if any entry has a non-null, non-empty notes field.
+  Future<bool> hasEntriesWithNotes() async {
+    final query = select(symptomEntries)
+      ..where((tbl) =>
+          tbl.notes.isNotNull() & tbl.notes.length.isBiggerThanValue(0))
+      ..limit(1);
+    final rows = await query.get();
+    return rows.isNotEmpty;
+  }
+
+  // ---------------------------------------------------------------------------
   // Data management
   // ---------------------------------------------------------------------------
 
-  /// Deletes all entries, join-table links, custom symptoms, and custom tags.
+  /// Deletes all unlocked achievements, allowing the user to re-earn them.
+  ///
+  /// Does NOT clear entry data — only resets achievement progress.
+  /// Also resets the retroactive scan flag so achievements are re-scanned
+  /// on next launch (if achievements are enabled).
+  Future<void> clearAchievements() async {
+    await delete(unlockedAchievements).go();
+  }
+
+  /// Deletes all entries, join-table links, custom symptoms, custom tags,
+  /// and unlocked achievements.
   ///
   /// Used by the "Clear All Data" feature in manage_items_screen.dart.
   Future<void> clearAllData() async {
     await transaction(() async {
+      await delete(unlockedAchievements).go();
       await delete(symptomEntryWithSymptom).go();
       await delete(symptomEntryWithTag).go();
       await delete(symptomEntries).go();

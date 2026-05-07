@@ -7,7 +7,7 @@
 //
 // Cross-ref:
 //   - Export format: services/export_service.dart (toJson)
-//   - Database writes: services/database.dart (saveEntry, getOrCreateSymptom/Tag)
+//   - Database writes: services/database.dart (importEntries — bulk insert)
 //   - Models: models/symptom_models.dart (UserSymptomModel, UserTagModel)
 //   - UI trigger: screens/settings/import_data_screen.dart
 
@@ -213,10 +213,11 @@ class ImportService {
 
   /// Imports entries from a Wellnot JSON export string into [database].
   ///
-  /// Entries with a `date_time` that already exists in the database are
-  /// skipped (duplicate detection). Symptoms and tags are created
-  /// automatically if they don't already exist (via [AppDatabase.saveEntry]
-  /// which calls [AppDatabase.getOrCreateSymptom] / [getOrCreateTag]).
+  /// Uses a two-pass approach for performance: first validates all entries and
+  /// filters duplicates into a list, then calls [AppDatabase.importEntries]
+  /// to write everything in a single transaction with cached symptom/tag
+  /// lookups. This avoids per-entry transactions and per-item full-table
+  /// SELECTs that made large imports slow on older devices.
   ///
   /// Call [validate] first to check the JSON structure before importing.
   static Future<ImportResult> importFromJson(
@@ -228,7 +229,7 @@ class ImportService {
       return const ImportResult(importedCount: 0, skippedCount: 0);
     }
 
-    // Build a set of (dateTime, mood, notes) fingerprints for duplicate detection.
+    // Build a set of fingerprints for duplicate detection.
     // Multiple entries at the same date_time are valid (different moods/symptoms),
     // but re-importing the exact same entry should be skipped.
     final existingEntries = await database.getAllEntriesWithDetails();
@@ -244,13 +245,13 @@ class ImportService {
         )
         .toSet();
 
-    var importedCount = 0;
+    // Pass 1: validate and filter duplicates into a list of models.
+    final entriesToImport = <SymptomEntryModel>[];
     var skippedCount = 0;
 
     for (var index = 0; index < entriesRaw.length; index++) {
       final entryMap = entriesRaw[index] as Map<String, dynamic>;
 
-      // Skip entries that fail validation (future dates, bad moods, etc.).
       final entryErrors = _validateEntry(entryMap, index);
       if (entryErrors.isNotEmpty) {
         skippedCount++;
@@ -261,7 +262,6 @@ class ImportService {
       final mood = entryMap['mood'] as String;
       final notes = entryMap['notes'] as String?;
 
-      // Parse symptoms (already validated as non-empty by _validateEntry).
       final symptomsRaw = entryMap['symptoms'] as List;
       final symptoms = symptomsRaw.map((symptomRaw) {
         final symptomMap = symptomRaw as Map<String, dynamic>;
@@ -271,13 +271,11 @@ class ImportService {
         return UserSymptomModel(id: 0, name: name, severity: severity);
       }).toList();
 
-      // Parse tags (gracefully handle missing key).
       final tagsRaw = entryMap['tags'] as List? ?? [];
       final tags = tagsRaw
           .map((tagName) => UserTagModel(id: 0, name: tagName as String))
           .toList();
 
-      // Skip duplicates (same date_time + mood + symptoms + tags + notes).
       final fingerprint = _entryFingerprint(
         dateTime: dateTime,
         mood: mood,
@@ -290,20 +288,22 @@ class ImportService {
         continue;
       }
 
-      await database.saveEntry(
+      existingFingerprints.add(fingerprint);
+      entriesToImport.add(SymptomEntryModel(
+        id: 0,
         dateTime: dateTime,
         mood: mood,
         notes: notes,
         symptoms: symptoms,
         tags: tags,
-      );
-
-      existingFingerprints.add(fingerprint);
-      importedCount++;
+      ));
     }
 
+    // Pass 2: bulk-insert all valid entries in a single transaction.
+    await database.importEntries(entriesToImport);
+
     return ImportResult(
-      importedCount: importedCount,
+      importedCount: entriesToImport.length,
       skippedCount: skippedCount,
     );
   }

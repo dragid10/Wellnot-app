@@ -15,11 +15,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../app.dart';
 import '../constants/defaults.dart';
 import '../constants/layout.dart';
 import '../models/symptom_models.dart';
+import '../services/achievement_service.dart';
 import '../services/database.dart';
 import '../services/item_preferences_service.dart';
+import '../services/preferences_service.dart';
 import '../widgets/adaptive_pickers.dart';
 import '../widgets/info_tooltip.dart';
 import '../widgets/symptom_entry_widget.dart';
@@ -130,6 +133,12 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
   /// Loaded separately from main items (non-critical hint data).
   Map<String, int> _lastSeverities = {};
 
+  /// Whether the symptoms chip group is expanded (showing all items).
+  bool _symptomsExpanded = false;
+
+  /// Whether the tags chip group is expanded (showing all items).
+  bool _tagsExpanded = false;
+
   late AppDatabase _database;
   bool _initialized = false;
 
@@ -233,6 +242,14 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
 
   /// Merges user-defined items with defaults, deduplicates by lowercase
   /// name, filters out hidden items, and sorts with pinned items first.
+  Future<void> _checkPinAchievement() async {
+    if (!PreferencesService.achievementsEnabledNotifier.value) return;
+    final unlocked = await AchievementService.checkAfterPin(_database);
+    if (unlocked.isNotEmpty) {
+      notifyAchievementsUnlocked(unlocked);
+    }
+  }
+
   void _rebuildMergedLists() {
     // Symptoms: user-defined first so they take priority in the map.
     final defaultSymptomModels = defaultSymptoms
@@ -343,16 +360,31 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
     }
 
     try {
+      final notes =
+          _notesController.text.isEmpty ? null : _notesController.text;
       await _database.saveEntry(
         // In duplicate mode, don't pass the original entry's ID so a
         // new entry is created instead of updating the original.
         existingId: widget.duplicate ? null : widget.entry?.id,
         dateTime: _selectedDateTime,
         mood: _selectedMood!,
-        notes: _notesController.text.isEmpty ? null : _notesController.text,
+        notes: notes,
         symptoms: _selectedSymptoms,
         tags: _selectedTags,
       );
+
+      if (PreferencesService.achievementsEnabledNotifier.value) {
+        final newlyUnlocked = await AchievementService.checkAfterSave(
+          _database,
+          entryDateTime: _selectedDateTime,
+          symptomCount: _selectedSymptoms.length,
+          hasNote: notes != null && notes.trim().isNotEmpty,
+          hasTags: _selectedTags.isNotEmpty,
+        );
+        if (newlyUnlocked.isNotEmpty) {
+          notifyAchievementsUnlocked(newlyUnlocked);
+        }
+      }
 
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -427,6 +459,14 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$type "$itemName" already exists!')),
         );
+      } else if (result != -1 && type == 'Symptom') {
+        if (PreferencesService.achievementsEnabledNotifier.value) {
+          final unlocked =
+              await AchievementService.checkAfterCustomSymptomAdd(_database);
+          if (unlocked.isNotEmpty) {
+            notifyAchievementsUnlocked(unlocked);
+          }
+        }
       }
       _loadUserItems();
     } catch (e) {
@@ -559,13 +599,19 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
                   _selectedSymptoms,
                   (item) => item.name,
                   pinnedNames: _pinnedSymptoms,
+                  isExpanded: _symptomsExpanded,
+                  onToggleExpanded: () {
+                    setState(() {
+                      _symptomsExpanded = !_symptomsExpanded;
+                    });
+                  },
                   onChipTap: (item) {
                     setState(() {
                       _expandedSymptomName = item.name;
                     });
                   },
-                  // Long-press to pin/unpin a symptom.
                   onLongPress: (item) async {
+                    final wasPinned = _pinnedSymptoms.contains(item.name);
                     final updated =
                         await ItemPreferencesService.togglePinSymptom(
                             item.name);
@@ -573,6 +619,7 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
                       _pinnedSymptoms = updated;
                       _rebuildMergedLists();
                     });
+                    if (!wasPinned) _checkPinAchievement();
                   },
                 ),
                 // Render a SymptomEntryWidget (with severity slider) for each
@@ -612,14 +659,21 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
                   _selectedTags,
                   (item) => (item).name,
                   pinnedNames: _pinnedTags,
-                  // Long-press to pin/unpin a tag.
+                  isExpanded: _tagsExpanded,
+                  onToggleExpanded: () {
+                    setState(() {
+                      _tagsExpanded = !_tagsExpanded;
+                    });
+                  },
                   onLongPress: (item) async {
+                    final wasPinned = _pinnedTags.contains(item.name);
                     final updated =
                         await ItemPreferencesService.togglePinTag(item.name);
                     setState(() {
                       _pinnedTags = updated;
                       _rebuildMergedLists();
                     });
+                    if (!wasPinned) _checkPinAchievement();
                   },
                 ),
                 const Divider(),
@@ -696,48 +750,98 @@ class _SymptomEntryScreenState extends State<SymptomEntryScreen> {
     List<T> selectedItems,
     String Function(T) getName, {
     void Function(T)? onChipTap,
-    // List of pinned names — if provided, pinned items show a pin icon.
     List<String>? pinnedNames,
-    // Called when user long-presses a chip to toggle its pin state.
     void Function(T)? onLongPress,
+    bool isExpanded = false,
+    VoidCallback? onToggleExpanded,
   }) {
-    return Wrap(
-      spacing: chipSpacing,
-      children: items.map((item) {
-        final name = getName(item);
-        // Case-insensitive match to handle user vs default name casing.
-        bool isSelected = selectedItems.any(
-          (s) => getName(s).toLowerCase() == name.toLowerCase(),
-        );
-        // Check if this item is pinned (for visual indicator).
-        final isPinned = pinnedNames?.contains(name) ?? false;
-        return GestureDetector(
-          // Long-press to toggle pin state.
-          onLongPress: onLongPress != null ? () => onLongPress(item) : null,
-          child: FilterChip(
-            // Show a small pin icon on pinned items.
-            avatar: isPinned
-                ? Icon(Icons.push_pin,
-                    size: 16, color: Theme.of(context).colorScheme.primary)
-                : null,
-            label: Text(name),
-            selected: isSelected,
-            showCheckmark: false,
-            onSelected: (selected) {
-              setState(() {
-                if (selected) {
-                  if (!isSelected) selectedItems.add(item);
-                } else {
-                  selectedItems.removeWhere(
-                    (s) => getName(s).toLowerCase() == name.toLowerCase(),
-                  );
-                }
-                if (onChipTap != null) onChipTap(item);
-              });
-            },
+    final selectedNames =
+        selectedItems.map((item) => getName(item).toLowerCase()).toSet();
+    final pinnedSet =
+        pinnedNames?.map((name) => name.toLowerCase()).toSet() ?? {};
+
+    // Count unpinned, unselected items to decide whether to collapse.
+    final unpinnedUnselected = items.where((item) {
+      final nameLower = getName(item).toLowerCase();
+      return !pinnedSet.contains(nameLower) &&
+          !selectedNames.contains(nameLower);
+    }).toList();
+
+    final shouldCollapse = !isExpanded &&
+        onToggleExpanded != null &&
+        unpinnedUnselected.length > chipGroupCollapsedThreshold;
+
+    // Build the visible items list.
+    List<T> visibleItems;
+    int hiddenCount;
+    if (shouldCollapse) {
+      final visibleUnpinnedUnselected =
+          unpinnedUnselected.take(chipGroupCollapsedThreshold).toSet();
+      visibleItems = items.where((item) {
+        final nameLower = getName(item).toLowerCase();
+        if (pinnedSet.contains(nameLower)) return true;
+        if (selectedNames.contains(nameLower)) return true;
+        return visibleUnpinnedUnselected.contains(item);
+      }).toList();
+      hiddenCount = unpinnedUnselected.length - chipGroupCollapsedThreshold;
+    } else {
+      visibleItems = items;
+      hiddenCount = 0;
+    }
+
+    final List<Widget> chips = visibleItems.map<Widget>((item) {
+      final name = getName(item);
+      final isSelected = selectedNames.contains(name.toLowerCase());
+      final isPinned = pinnedSet.contains(name.toLowerCase());
+      return GestureDetector(
+        onLongPress: onLongPress != null ? () => onLongPress(item) : null,
+        child: FilterChip(
+          avatar: isPinned
+              ? Icon(Icons.push_pin,
+                  size: 16, color: Theme.of(context).colorScheme.primary)
+              : null,
+          label: Text(name),
+          selected: isSelected,
+          showCheckmark: false,
+          onSelected: (selected) {
+            setState(() {
+              if (selected) {
+                if (!isSelected) selectedItems.add(item);
+              } else {
+                selectedItems.removeWhere(
+                  (s) => getName(s).toLowerCase() == name.toLowerCase(),
+                );
+              }
+              if (onChipTap != null) onChipTap(item);
+            });
+          },
+        ),
+      );
+    }).toList();
+
+    // Add toggle chip if collapsible.
+    if (onToggleExpanded != null &&
+        unpinnedUnselected.length > chipGroupCollapsedThreshold) {
+      if (shouldCollapse) {
+        chips.add(
+          ActionChip(
+            label: Text('Show all ($hiddenCount more)'),
+            onPressed: onToggleExpanded,
           ),
         );
-      }).toList(),
+      } else {
+        chips.add(
+          ActionChip(
+            label: const Text('Show less'),
+            onPressed: onToggleExpanded,
+          ),
+        );
+      }
+    }
+
+    return Wrap(
+      spacing: chipSpacing,
+      children: chips,
     );
   }
 

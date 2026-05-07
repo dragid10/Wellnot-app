@@ -32,9 +32,11 @@ import 'package:symptom_tracker_app/screens/settings/calendar_settings_screen.da
 import 'package:symptom_tracker_app/screens/settings/clear_reset_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/encryption_issue_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/security_settings_screen.dart';
+import 'package:symptom_tracker_app/screens/settings/terms_of_service_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/display_settings_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/export_data_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/import_data_screen.dart';
+import 'package:symptom_tracker_app/screens/settings/privacy_policy_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/reminders_settings_screen.dart';
 import 'package:symptom_tracker_app/screens/settings/theme_settings_screen.dart';
 import 'package:symptom_tracker_app/services/database.dart';
@@ -104,7 +106,7 @@ void main() {
   // ---------------------------------------------------------------------------
 
   testWidgets(
-      'As a user, I expect to see accent-colored section headers for Personalization, Security, Notifications, Data, and Support',
+      'As a user, I expect to see accent-colored section headers for Personalization, Security, Notifications, Data, Legal, and Support',
       (tester) async {
     await pumpSettings(tester);
 
@@ -118,6 +120,9 @@ void main() {
 
     await scrollTo(tester, find.text('Data'));
     expect(find.text('Data'), findsOneWidget);
+
+    await scrollTo(tester, find.text('Legal'));
+    expect(find.text('Legal'), findsOneWidget);
 
     await scrollTo(tester, find.text('Support'));
     expect(find.text('Support'), findsOneWidget);
@@ -205,9 +210,12 @@ void main() {
   // ---------------------------------------------------------------------------
 
   testWidgets(
-      'As a user, I expect to see Send Feedback, What\'s New, and About tiles in the Support section',
+      'As a user, I expect to see Rate Wellnot, Send Feedback, What\'s New, and About tiles in the Support section',
       (tester) async {
     await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Rate Wellnot'));
+    expect(find.text('Rate Wellnot'), findsOneWidget);
 
     await scrollTo(tester, find.text('Send Feedback'));
     expect(find.text('Send Feedback'), findsOneWidget);
@@ -314,6 +322,48 @@ void main() {
   });
 
   testWidgets(
+      'As a user, I expect to see the Achievements section header in settings',
+      (tester) async {
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Achievements').last);
+    expect(find.text('Achievements'), findsAtLeast(1));
+  });
+
+  testWidgets('As a user, I expect the Achievements toggle to be on by default',
+      (tester) async {
+    PreferencesService.achievementsEnabledNotifier.value = true;
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Track and display achievements'));
+
+    final toggle = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Achievements').last,
+    );
+    expect(toggle.value, isTrue);
+  });
+
+  testWidgets(
+      'As a user, I expect toggling Achievements off to disable achievement notifications too',
+      (tester) async {
+    PreferencesService.achievementsEnabledNotifier.value = true;
+    PreferencesService.achievementNotificationsNotifier.value = true;
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Track and display achievements'));
+    await tester.tap(find.text('Track and display achievements'));
+    await tester.pump();
+
+    final notifToggle = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Achievement Notifications'),
+    );
+    expect(notifToggle.onChanged, isNull);
+
+    PreferencesService.achievementsEnabledNotifier.value = true;
+    PreferencesService.achievementNotificationsNotifier.value = true;
+  });
+
+  testWidgets(
       'As a user, I expect tapping Export Data to navigate to the export data screen',
       (tester) async {
     await pumpSettings(tester);
@@ -347,6 +397,42 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ClearResetScreen), findsOneWidget);
+  });
+
+  testWidgets(
+      'As a user, I expect to see Privacy Policy and Terms of Service tiles in the Legal section',
+      (tester) async {
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Privacy Policy'));
+    expect(find.text('Privacy Policy'), findsOneWidget);
+
+    await scrollTo(tester, find.text('Terms of Service'));
+    expect(find.text('Terms of Service'), findsOneWidget);
+  });
+
+  testWidgets(
+      'As a user, I expect tapping Privacy Policy to navigate to the privacy policy screen',
+      (tester) async {
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Privacy Policy'));
+    await tester.tap(find.text('Privacy Policy'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
+  });
+
+  testWidgets(
+      'As a user, I expect tapping Terms of Service to navigate to the terms of service screen',
+      (tester) async {
+    await pumpSettings(tester);
+
+    await scrollTo(tester, find.text('Terms of Service'));
+    await tester.tap(find.text('Terms of Service'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TermsOfServiceScreen), findsOneWidget);
   });
 
   testWidgets(

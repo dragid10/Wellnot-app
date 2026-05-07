@@ -762,4 +762,482 @@ void main() {
       expect(severities['Fatigue'], 1);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Achievement tracking (#136)
+  // ---------------------------------------------------------------------------
+  group('Achievement helpers', () {
+    late AppDatabase db;
+
+    setUp(() {
+      db = createTestDatabase();
+    });
+
+    tearDown(() async {
+      await db.close();
+    });
+
+    test(
+        'As a user, I expect unlockAchievement to store a row and isAchievementUnlocked to return true',
+        () async {
+      await db.unlockAchievement('milestone_1', 1);
+
+      final isUnlocked = await db.isAchievementUnlocked('milestone_1');
+      expect(isUnlocked, true);
+    });
+
+    test(
+        'As a user, I expect isAchievementUnlocked to return false for an achievement that was never unlocked',
+        () async {
+      final isUnlocked = await db.isAchievementUnlocked('streak_30');
+      expect(isUnlocked, false);
+    });
+
+    test(
+        'As a user, I expect unlockAchievement to be idempotent - calling twice does not throw or create a duplicate',
+        () async {
+      await db.unlockAchievement('milestone_1', 1);
+      await db.unlockAchievement('milestone_1', 5);
+
+      final unlocked = await db.getUnlockedAchievements();
+      final milestone1Entries = unlocked
+          .where((item) => item.achievementId == 'milestone_1')
+          .toList();
+      expect(milestone1Entries, hasLength(1));
+      expect(milestone1Entries.first.progress, 1);
+    });
+
+    test(
+        'As a user, I expect getUnlockedAchievements to return all unlocked achievements',
+        () async {
+      await db.unlockAchievement('milestone_1', 1);
+      await db.unlockAchievement('streak_3', 3);
+      await db.unlockAchievement('usage_first_tag', 1);
+
+      final unlocked = await db.getUnlockedAchievements();
+      expect(unlocked, hasLength(3));
+      final ids = unlocked.map((item) => item.achievementId).toSet();
+      expect(ids, containsAll(['milestone_1', 'streak_3', 'usage_first_tag']));
+    });
+
+    test('As a user, I expect batch unlockAchievements to store multiple rows',
+        () async {
+      final now = DateTime.now();
+      await db.unlockAchievements([
+        (id: 'milestone_1', progress: 1, unlockedAt: now),
+        (id: 'milestone_10', progress: 10, unlockedAt: now),
+        (id: 'streak_3', progress: 3, unlockedAt: now),
+      ]);
+
+      final unlocked = await db.getUnlockedAchievements();
+      expect(unlocked, hasLength(3));
+    });
+
+    test('As a user, I expect clearAllData to also clear unlocked achievements',
+        () async {
+      await db.unlockAchievement('milestone_1', 1);
+      await db.unlockAchievement('streak_3', 3);
+
+      await db.clearAllData();
+
+      final unlocked = await db.getUnlockedAchievements();
+      expect(unlocked, isEmpty);
+    });
+
+    test(
+        'As a user, I expect clearAchievements to reset achievements without affecting entry data',
+        () async {
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.unlockAchievement('milestone_1', 1);
+      await db.unlockAchievement('streak_3', 3);
+
+      await db.clearAchievements();
+
+      final unlocked = await db.getUnlockedAchievements();
+      expect(unlocked, isEmpty);
+
+      final entryCount = await db.getTotalEntryCount();
+      expect(entryCount, 1);
+    });
+
+    test('As a user, I expect getTotalEntryCount to return the correct count',
+        () async {
+      expect(await db.getTotalEntryCount(), 0);
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 10),
+        mood: '😢',
+        symptoms: [UserSymptomModel(id: -1, name: 'Fatigue')],
+        tags: [],
+      );
+
+      expect(await db.getTotalEntryCount(), 2);
+    });
+
+    test('As a user, I expect getAllEntryDates to return sorted unique dates',
+        () async {
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 14),
+        mood: '😢',
+        symptoms: [UserSymptomModel(id: -1, name: 'Fatigue')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 16),
+        mood: '😐',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+
+      final dates = await db.getAllEntryDates();
+      expect(dates, hasLength(2));
+      expect(dates[0], DateTime(2025, 1, 1));
+      expect(dates[1], DateTime(2025, 1, 2));
+    });
+
+    test('As a user, I expect getDistinctMoodCount to count unique moods',
+        () async {
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 10),
+        mood: '😢',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 3, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+
+      expect(await db.getDistinctMoodCount(), 2);
+    });
+
+    test(
+        'As a user, I expect hasEntriesWithTags to return true when entries have tags',
+        () async {
+      expect(await db.hasEntriesWithTags(), false);
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [UserTagModel(id: -1, name: 'Exercise')],
+      );
+
+      expect(await db.hasEntriesWithTags(), true);
+    });
+
+    test(
+        'As a user, I expect hasEntriesWithNotes to return true when entries have notes',
+        () async {
+      expect(await db.hasEntriesWithNotes(), false);
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        notes: 'Feeling good',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+
+      expect(await db.hasEntriesWithNotes(), true);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Database indexes (schema v4)
+  // ---------------------------------------------------------------------------
+
+  group('Database indexes', () {
+    late AppDatabase db;
+
+    setUp(() {
+      db = createTestDatabase();
+    });
+
+    tearDown(() async {
+      await db.close();
+    });
+
+    test(
+        'As a user, I expect the entryDateTime index to exist so date-range queries are fast',
+        () async {
+      final result = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_entry_date_time'",
+          )
+          .get();
+      expect(result, hasLength(1));
+    });
+
+    test(
+        'As a user, I expect the symptom join table index to exist so entry lookups are fast',
+        () async {
+      final result = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_sews_entry_id'",
+          )
+          .get();
+      expect(result, hasLength(1));
+    });
+
+    test(
+        'As a user, I expect the tag join table index to exist so entry lookups are fast',
+        () async {
+      final result = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_sewt_entry_id'",
+          )
+          .get();
+      expect(result, hasLength(1));
+    });
+
+    test(
+        'As a user, I expect date-range queries to return correct results with indexes in place',
+        () async {
+      await db.saveEntry(
+        dateTime: DateTime(2025, 3, 15, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: -1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 3, 20, 14),
+        mood: '😢',
+        symptoms: [UserSymptomModel(id: -1, name: 'Fatigue')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 4, 1, 8),
+        mood: '😐',
+        symptoms: [UserSymptomModel(id: -1, name: 'Nausea')],
+        tags: [],
+      );
+
+      final marchEntries = await db.getEntriesForDateRange(
+        DateTime(2025, 3, 1),
+        DateTime(2025, 3, 31, 23, 59, 59),
+      );
+      expect(marchEntries, hasLength(2));
+      expect(
+          marchEntries.map((entry) => entry.mood), containsAll(['😊', '😢']));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // importEntries (bulk import, #139)
+  // ---------------------------------------------------------------------------
+
+  group('importEntries', () {
+    test(
+        'As a user, I expect bulk-imported entries to store all fields correctly',
+        () async {
+      await db.importEntries([
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 10, 9, 30),
+          mood: '\u{1F60A}',
+          notes: 'Test note',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'Headache', severity: 4),
+            UserSymptomModel(id: 0, name: 'Fatigue', severity: 2),
+          ],
+          tags: [
+            UserTagModel(id: 0, name: 'Morning'),
+            UserTagModel(id: 0, name: 'Exercise'),
+          ],
+        ),
+      ]);
+
+      final entries = await db.getAllEntriesWithDetails();
+      expect(entries, hasLength(1));
+
+      final entry = entries.first;
+      expect(entry.dateTime, DateTime(2026, 3, 10, 9, 30));
+      expect(entry.mood, '\u{1F60A}');
+      expect(entry.notes, 'Test note');
+      expect(entry.symptoms, hasLength(2));
+      expect(entry.tags, hasLength(2));
+
+      final headache =
+          entry.symptoms.firstWhere((symptom) => symptom.name == 'Headache');
+      expect(headache.severity, 4);
+
+      final fatigue =
+          entry.symptoms.firstWhere((symptom) => symptom.name == 'Fatigue');
+      expect(fatigue.severity, 2);
+
+      final tagNames = entry.tags.map((tag) => tag.name).toSet();
+      expect(tagNames, containsAll(['Morning', 'Exercise']));
+    });
+
+    test(
+        'As a user, I expect bulk import to reuse existing symptoms by name (case-insensitive)',
+        () async {
+      await db.addSymptom('Headache');
+
+      await db.importEntries([
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 10, 9, 30),
+          mood: '\u{1F60A}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'headache', severity: 3),
+          ],
+          tags: [],
+        ),
+      ]);
+
+      final symptoms = await db.getAllSymptoms();
+      final headacheCount =
+          symptoms.where((symptom) => symptom.name == 'Headache').length;
+      expect(headacheCount, 1);
+    });
+
+    test(
+        'As a user, I expect bulk import to reuse existing tags by name (case-insensitive)',
+        () async {
+      await db.addTag('Exercise');
+
+      await db.importEntries([
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 10, 9, 30),
+          mood: '\u{1F60A}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'Headache', severity: 3),
+          ],
+          tags: [
+            UserTagModel(id: 0, name: 'exercise'),
+          ],
+        ),
+      ]);
+
+      final tags = await db.getAllTags();
+      final exerciseCount = tags.where((tag) => tag.name == 'Exercise').length;
+      expect(exerciseCount, 1);
+    });
+
+    test(
+        'As a user, I expect bulk import to create novel symptoms and tags automatically',
+        () async {
+      await db.importEntries([
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 10, 9, 30),
+          mood: '\u{1F60A}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'NewSymptom', severity: 3),
+          ],
+          tags: [
+            UserTagModel(id: 0, name: 'NewTag'),
+          ],
+        ),
+      ]);
+
+      final symptoms = await db.getAllSymptoms();
+      expect(symptoms.any((symptom) => symptom.name == 'NewSymptom'), isTrue);
+
+      final tags = await db.getAllTags();
+      expect(tags.any((tag) => tag.name == 'NewTag'), isTrue);
+    });
+
+    test(
+        'As a user, I expect bulk import to share symptom IDs across entries within the same batch',
+        () async {
+      await db.importEntries([
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 10, 9, 30),
+          mood: '\u{1F60A}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'Headache', severity: 3),
+          ],
+          tags: [],
+        ),
+        SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 3, 11, 10, 0),
+          mood: '\u{1F622}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'Headache', severity: 5),
+          ],
+          tags: [],
+        ),
+      ]);
+
+      final symptoms = await db.getAllSymptoms();
+      final headacheCount =
+          symptoms.where((symptom) => symptom.name == 'Headache').length;
+      expect(headacheCount, 1);
+
+      final entries = await db.getAllEntriesWithDetails();
+      expect(entries, hasLength(2));
+      for (final entry in entries) {
+        expect(entry.symptoms.first.name, 'Headache');
+      }
+    });
+
+    test('As a user, I expect bulk import with an empty list to be a no-op',
+        () async {
+      await db.importEntries([]);
+
+      final entries = await db.getAllEntriesWithDetails();
+      expect(entries, isEmpty);
+    });
+
+    test(
+        'As a user, I expect bulk import to handle multiple entries with different symptoms and tags',
+        () async {
+      final entriesToImport = List.generate(
+        50,
+        (index) => SymptomEntryModel(
+          id: 0,
+          dateTime: DateTime(2026, 1, 1 + index, 10),
+          mood: '\u{1F60A}',
+          symptoms: [
+            UserSymptomModel(id: 0, name: 'Symptom${index % 5}', severity: 3),
+          ],
+          tags: [
+            UserTagModel(id: 0, name: 'Tag${index % 3}'),
+          ],
+        ),
+      );
+
+      await db.importEntries(entriesToImport);
+
+      final entries = await db.getAllEntriesWithDetails();
+      expect(entries, hasLength(50));
+
+      final symptoms = await db.getAllSymptoms();
+      expect(symptoms, hasLength(5));
+
+      final tags = await db.getAllTags();
+      expect(tags, hasLength(3));
+    });
+  });
 }

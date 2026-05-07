@@ -15,6 +15,7 @@
 import 'dart:io' show exit;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../constants/encryption_recovery.dart';
 import '../../constants/layout.dart';
@@ -72,6 +73,16 @@ class _EncryptionIssueScreenState extends State<EncryptionIssueScreen> {
       if (mounted && savedPath != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Export saved successfully')),
+        );
+      }
+    } on PlatformException catch (platformError) {
+      if (platformError.code == 'FileSaver' ||
+          (platformError.message?.contains('cancel') ?? false)) {
+        return;
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: ${platformError.message}')),
         );
       }
     } catch (error) {
