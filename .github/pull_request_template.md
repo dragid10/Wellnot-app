@@ -12,9 +12,14 @@
 - [ ] `flutter analyze` passes
 - [ ] `flutter test` passes
 - [ ] Integration tests pass (if UI changes)
-- [ ] Changelog fragment included (if user-facing)
 
 ### Manual testing
 - [ ] Android device/emulator
 - [ ] iOS device/simulator
 <!-- Describe specific scenarios tested -->
+
+## AI assistance
+
+- [ ] This PR includes code generated or significantly assisted by an AI tool
+
+<!-- If checked: name the tool and confirm commit(s) include a Co-Authored-By trailer. See CONTRIBUTING.md. -->
