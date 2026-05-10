@@ -715,6 +715,27 @@ class AppDatabase extends _$AppDatabase {
     return rows.length;
   }
 
+  /// Returns the number of distinct symptoms used across all entries.
+  Future<int> getDistinctSymptomCount() async {
+    final query = selectOnly(symptomEntryWithSymptom, distinct: true)
+      ..addColumns([symptomEntryWithSymptom.userSymptomId]);
+    final rows = await query.get();
+    return rows.length;
+  }
+
+  /// Returns the number of entries on a specific date (date-only, no time).
+  Future<int> getEntriesForDay(DateTime date) async {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(const Duration(days: 1));
+    final count = countAll();
+    final query = selectOnly(symptomEntries)..addColumns([count]);
+    query.where(
+      symptomEntries.entryDateTime.isBetweenValues(start, end),
+    );
+    final result = await query.getSingle();
+    return result.read(count) ?? 0;
+  }
+
   /// Returns true if any entry has at least one tag linked.
   Future<bool> hasEntriesWithTags() async {
     final count = countAll();

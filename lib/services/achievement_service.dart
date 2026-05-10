@@ -154,6 +154,58 @@ class AchievementService {
       newlyUnlocked.add('usage_first_tag');
     }
 
+    // Full Spectrum: use all default moods
+    if (!alreadyUnlocked.contains('usage_full_spectrum')) {
+      final distinctMoods = await database.getDistinctMoodCount();
+      if (distinctMoods >= defaultMoods.length) {
+        await database.unlockAchievement('usage_full_spectrum', distinctMoods);
+        newlyUnlocked.add('usage_full_spectrum');
+      }
+    }
+
+    // Complete Catalog: track all default symptoms
+    if (!alreadyUnlocked.contains('usage_complete_catalog')) {
+      final distinctSymptoms = await database.getDistinctSymptomCount();
+      if (distinctSymptoms >= defaultSymptoms.length) {
+        await database.unlockAchievement(
+            'usage_complete_catalog', distinctSymptoms);
+        newlyUnlocked.add('usage_complete_catalog');
+      }
+    }
+
+    // Double Down: 2+ entries on the same day
+    if (!alreadyUnlocked.contains('usage_double_entry')) {
+      final dayCount = await database.getEntriesForDay(entryDateTime);
+      if (dayCount >= 2) {
+        await database.unlockAchievement('usage_double_entry', dayCount);
+        newlyUnlocked.add('usage_double_entry');
+      }
+    }
+
+    // On Schedule: entries at roughly the same time on 5+ different days
+    if (!alreadyUnlocked.contains('usage_consistent_tracker')) {
+      final allEntries = await database.getAllEntriesWithDetails();
+      if (allEntries.length >= 5) {
+        final hours =
+            allEntries.map((e) => e.dateTime.hour.toDouble()).toList();
+        final avgHour = hours.fold(0.0, (sum, h) => sum + h) / hours.length;
+        final consistentDays = <String>{};
+        for (final entry in allEntries) {
+          final hour = entry.dateTime.hour.toDouble();
+          if ((hour - avgHour).abs() <= 2.0) {
+            final dayKey =
+                '${entry.dateTime.year}-${entry.dateTime.month}-${entry.dateTime.day}';
+            consistentDays.add(dayKey);
+          }
+        }
+        if (consistentDays.length >= 5) {
+          await database.unlockAchievement(
+              'usage_consistent_tracker', consistentDays.length);
+          newlyUnlocked.add('usage_consistent_tracker');
+        }
+      }
+    }
+
     return newlyUnlocked;
   }
 
@@ -218,18 +270,30 @@ class AchievementService {
     return [];
   }
 
-  /// Checks the custom symptom achievement after adding a new symptom.
+  /// Checks the custom symptom achievements after adding a new symptom.
   static Future<List<String>> checkAfterCustomSymptomAdd(
     AppDatabase database,
   ) async {
+    final unlocked = <String>[];
+
     if (!await database.isAchievementUnlocked('usage_first_custom_symptom')) {
       final customSymptoms = await database.getCustomSymptoms();
       if (customSymptoms.isNotEmpty) {
         await database.unlockAchievement('usage_first_custom_symptom', 1);
-        return ['usage_first_custom_symptom'];
+        unlocked.add('usage_first_custom_symptom');
       }
     }
-    return [];
+
+    if (!await database.isAchievementUnlocked('usage_personal_touch_2')) {
+      final customSymptoms = await database.getCustomSymptoms();
+      if (customSymptoms.length >= personalTouch2Threshold) {
+        await database.unlockAchievement(
+            'usage_personal_touch_2', customSymptoms.length);
+        unlocked.add('usage_personal_touch_2');
+      }
+    }
+
+    return unlocked;
   }
 
   /// Unlocks the export achievement after a successful data export.
@@ -320,17 +384,22 @@ class AchievementService {
     final batch = <({String id, int progress, DateTime unlockedAt})>[];
     final now = DateTime.now();
 
-    // Milestone achievements
+    // Load all data upfront to avoid N+1 queries — we need every piece of
+    // data for the batch unlock loop, so fetch it all in parallel before
+    // iterating over achievements.
     final totalEntries = await database.getTotalEntryCount();
-    for (final achievement in allAchievements) {
-      if (achievement.category != AchievementCategory.milestone &&
-          achievement.id != 'usage_mood_explorer' &&
-          achievement.id != 'usage_diverse_tracker') {
-        continue;
-      }
+    final dates = await database.getAllEntryDates();
+    final allEntries = await database.getAllEntriesWithDetails();
+    final customSymptoms = await database.getCustomSymptoms();
+    final hasTags = await database.hasEntriesWithTags();
+    final hasNotes = await database.hasEntriesWithNotes();
+    final distinctMoods = await database.getDistinctMoodCount();
+    final distinctSymptoms = await database.getDistinctSymptomCount();
 
-      if (achievement.category == AchievementCategory.milestone &&
-          totalEntries >= achievement.threshold) {
+    // Milestone achievements
+    for (final achievement in allAchievements) {
+      if (achievement.category != AchievementCategory.milestone) continue;
+      if (totalEntries >= achievement.threshold) {
         batch.add((
           id: achievement.id,
           progress: totalEntries,
@@ -340,7 +409,6 @@ class AchievementService {
     }
 
     // Streak achievements
-    final dates = await database.getAllEntryDates();
     final longestStreak = computeLongestStreak(dates);
     for (final achievement in allAchievements) {
       if (achievement.category != AchievementCategory.streak) continue;
@@ -354,7 +422,6 @@ class AchievementService {
     }
 
     // Usage: custom symptoms
-    final customSymptoms = await database.getCustomSymptoms();
     if (customSymptoms.isNotEmpty) {
       batch.add((
         id: 'usage_first_custom_symptom',
@@ -364,19 +431,16 @@ class AchievementService {
     }
 
     // Usage: tags
-    final hasTags = await database.hasEntriesWithTags();
     if (hasTags) {
       batch.add((id: 'usage_first_tag', progress: 1, unlockedAt: now));
     }
 
     // Usage: notes
-    final hasNotes = await database.hasEntriesWithNotes();
     if (hasNotes) {
       batch.add((id: 'usage_first_note', progress: 1, unlockedAt: now));
     }
 
     // Usage: mood explorer (5+ distinct moods)
-    final distinctMoods = await database.getDistinctMoodCount();
     if (distinctMoods >= 5) {
       batch.add((
         id: 'usage_mood_explorer',
@@ -385,8 +449,51 @@ class AchievementService {
       ));
     }
 
+    // Usage: full spectrum (all default moods)
+    if (distinctMoods >= defaultMoods.length) {
+      batch.add((
+        id: 'usage_full_spectrum',
+        progress: distinctMoods,
+        unlockedAt: now,
+      ));
+    }
+
+    // Usage: complete catalog (all default symptoms)
+    if (distinctSymptoms >= defaultSymptoms.length) {
+      batch.add((
+        id: 'usage_complete_catalog',
+        progress: distinctSymptoms,
+        unlockedAt: now,
+      ));
+    }
+
+    // Usage: personal touch 2.0 (5+ custom symptoms)
+    if (customSymptoms.length >= personalTouch2Threshold) {
+      batch.add((
+        id: 'usage_personal_touch_2',
+        progress: customSymptoms.length,
+        unlockedAt: now,
+      ));
+    }
+
+    // Usage: double entry (2+ entries on same day)
+    final entriesByDay = <String, int>{};
+    for (final entry in allEntries) {
+      final dayKey =
+          '${entry.dateTime.year}-${entry.dateTime.month}-${entry.dateTime.day}';
+      entriesByDay[dayKey] = (entriesByDay[dayKey] ?? 0) + 1;
+    }
+    final maxEntriesOnDay =
+        entriesByDay.values.fold(0, (max, c) => c > max ? c : max);
+    if (maxEntriesOnDay >= 2) {
+      batch.add((
+        id: 'usage_double_entry',
+        progress: maxEntriesOnDay,
+        unlockedAt: now
+      ));
+    }
+
     // Usage: night owl / early bird (scan entry times)
-    final allEntries = await database.getAllEntriesWithDetails();
     bool nightOwlFound = false;
     bool earlyBirdFound = false;
     bool diverseTrackerFound = false;
@@ -432,6 +539,28 @@ class AchievementService {
     // Only Human: missed a day after building a 2+ day streak
     if (_hasMissedDayAfterStreak(dates)) {
       batch.add((id: 'usage_missed_day', progress: 1, unlockedAt: now));
+    }
+
+    // On Schedule: entries at roughly the same time on 5+ different days
+    if (allEntries.length >= 5) {
+      final hours = allEntries.map((e) => e.dateTime.hour.toDouble()).toList();
+      final avgHour = hours.fold(0.0, (sum, h) => sum + h) / hours.length;
+      final consistentDays = <String>{};
+      for (final entry in allEntries) {
+        final hour = entry.dateTime.hour.toDouble();
+        if ((hour - avgHour).abs() <= 2.0) {
+          final dayKey =
+              '${entry.dateTime.year}-${entry.dateTime.month}-${entry.dateTime.day}';
+          consistentDays.add(dayKey);
+        }
+      }
+      if (consistentDays.length >= 5) {
+        batch.add((
+          id: 'usage_consistent_tracker',
+          progress: consistentDays.length,
+          unlockedAt: now,
+        ));
+      }
     }
 
     if (batch.isNotEmpty) {
@@ -487,6 +616,8 @@ class AchievementService {
     final dates = await database.getAllEntryDates();
     final currentStreak = computeCurrentStreak(dates);
     final distinctMoods = await database.getDistinctMoodCount();
+    final distinctSymptoms = await database.getDistinctSymptomCount();
+    final customSymptoms = await database.getCustomSymptoms();
 
     for (final achievement in allAchievements) {
       if (unlockedIds.contains(achievement.id)) {
@@ -507,6 +638,15 @@ class AchievementService {
           if (achievement.id == 'usage_mood_explorer') {
             progress[achievement.id] =
                 (distinctMoods / achievement.threshold).clamp(0.0, 1.0);
+          } else if (achievement.id == 'usage_full_spectrum') {
+            progress[achievement.id] =
+                (distinctMoods / achievement.threshold).clamp(0.0, 1.0);
+          } else if (achievement.id == 'usage_complete_catalog') {
+            progress[achievement.id] =
+                (distinctSymptoms / achievement.threshold).clamp(0.0, 1.0);
+          } else if (achievement.id == 'usage_personal_touch_2') {
+            progress[achievement.id] =
+                (customSymptoms.length / achievement.threshold).clamp(0.0, 1.0);
           } else {
             progress[achievement.id] = 0.0;
           }

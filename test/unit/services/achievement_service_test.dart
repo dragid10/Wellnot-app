@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:symptom_tracker_app/constants/defaults.dart';
 import 'package:symptom_tracker_app/models/symptom_models.dart';
 import 'package:symptom_tracker_app/services/achievement_service.dart';
 
@@ -575,6 +576,417 @@ void main() {
       final progress = await AchievementService.computeProgress(db);
 
       expect(progress['milestone_10'], closeTo(0.5, 0.01));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Full Spectrum achievement (all default moods)
+  // ---------------------------------------------------------------------------
+  group('Full Spectrum achievement', () {
+    test(
+        'As a user, I expect using all default moods to unlock usage_full_spectrum',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultMoods.length; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: defaultMoods[index],
+          symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, defaultMoods.length + 1, 10),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, contains('usage_full_spectrum'));
+    });
+
+    test(
+        'As a user, I expect one less than the default mood count not to unlock usage_full_spectrum',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultMoods.length - 1; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: defaultMoods[index],
+          symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, defaultMoods.length, 10),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, isNot(contains('usage_full_spectrum')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Complete Catalog achievement (all default symptoms)
+  // ---------------------------------------------------------------------------
+  group('Complete Catalog achievement', () {
+    test(
+        'As a user, I expect tracking all default symptoms to unlock usage_complete_catalog',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultSymptoms.length; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: '😊',
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, defaultSymptoms.length + 1, 10),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, contains('usage_complete_catalog'));
+    });
+
+    test(
+        'As a user, I expect one less than the default symptom count not to unlock usage_complete_catalog',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultSymptoms.length - 1; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: '😊',
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, defaultSymptoms.length, 10),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, isNot(contains('usage_complete_catalog')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Double Down achievement (2+ entries same day)
+  // ---------------------------------------------------------------------------
+  group('Double Down achievement', () {
+    test(
+        'As a user, I expect logging 2 entries on the same day to unlock usage_double_entry',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 8),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 18),
+        mood: '😴',
+        symptoms: [UserSymptomModel(id: 1, name: 'Fatigue')],
+        tags: [],
+      );
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, 1, 18),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, contains('usage_double_entry'));
+    });
+
+    test('As a user, I expect 1 entry per day not to unlock usage_double_entry',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 10),
+        mood: '😊',
+        symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+        tags: [],
+      );
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, 2, 10),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, isNot(contains('usage_double_entry')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Personal Touch 2.0 achievement (5 custom symptoms)
+  // ---------------------------------------------------------------------------
+  group('Personal Touch 2.0 achievement', () {
+    test(
+        'As a user, I expect creating 5 custom symptoms to unlock usage_personal_touch_2',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < 5; index++) {
+        await db.addSymptom('Custom Symptom $index');
+      }
+
+      final unlocked = await AchievementService.checkAfterCustomSymptomAdd(db);
+
+      expect(unlocked, contains('usage_personal_touch_2'));
+    });
+
+    test(
+        'As a user, I expect 4 custom symptoms not to unlock usage_personal_touch_2',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < 4; index++) {
+        await db.addSymptom('Custom Symptom $index');
+      }
+
+      final unlocked = await AchievementService.checkAfterCustomSymptomAdd(db);
+
+      expect(unlocked, isNot(contains('usage_personal_touch_2')));
+    });
+
+    test(
+        'As a user, I expect usage_first_custom_symptom to unlock before usage_personal_touch_2',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      await db.addSymptom('Custom Symptom 1');
+      final firstUnlock =
+          await AchievementService.checkAfterCustomSymptomAdd(db);
+      expect(firstUnlock, contains('usage_first_custom_symptom'));
+      expect(firstUnlock, isNot(contains('usage_personal_touch_2')));
+
+      await db.addSymptom('Custom Symptom 2');
+      await db.addSymptom('Custom Symptom 3');
+      await db.addSymptom('Custom Symptom 4');
+      await db.addSymptom('Custom Symptom 5');
+      final secondUnlock =
+          await AchievementService.checkAfterCustomSymptomAdd(db);
+      expect(secondUnlock, contains('usage_personal_touch_2'));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // On Schedule achievement (same time on 5+ days)
+  // ---------------------------------------------------------------------------
+  group('On Schedule achievement', () {
+    test(
+        'As a user, I expect logging at roughly the same time on 5 days to unlock usage_consistent_tracker',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < 5; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 9),
+          mood: '😊',
+          symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, 5, 9),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, contains('usage_consistent_tracker'));
+    });
+
+    test(
+        'As a user, I expect only 4 days not to unlock usage_consistent_tracker',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < 4; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 9),
+          mood: '😊',
+          symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
+          tags: [],
+        );
+      }
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, 4, 9),
+        symptomCount: 1,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, isNot(contains('usage_consistent_tracker')));
+    });
+
+    test(
+        'As a user, I expect highly variable times not to unlock usage_consistent_tracker',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 1, 8),
+        mood: '😊',
+        symptoms: [],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 2, 14),
+        mood: '😊',
+        symptoms: [],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 3, 20),
+        mood: '😊',
+        symptoms: [],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 4, 3),
+        mood: '😊',
+        symptoms: [],
+        tags: [],
+      );
+      await db.saveEntry(
+        dateTime: DateTime(2025, 1, 5, 12),
+        mood: '😊',
+        symptoms: [],
+        tags: [],
+      );
+
+      final unlocked = await AchievementService.checkAfterSave(
+        db,
+        entryDateTime: DateTime(2025, 1, 5, 12),
+        symptomCount: 0,
+        hasNote: false,
+        hasTags: false,
+      );
+
+      expect(unlocked, isNot(contains('usage_consistent_tracker')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Progress computation for new achievements
+  // ---------------------------------------------------------------------------
+  group('computeProgress for new achievements', () {
+    test(
+        'As a user, I expect usage_full_spectrum progress to reflect mood count',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultMoods.length - 1; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: defaultMoods[index],
+          symptoms: [],
+          tags: [],
+        );
+      }
+
+      final progress = await AchievementService.computeProgress(db);
+
+      expect(
+        progress['usage_full_spectrum'],
+        closeTo((defaultMoods.length - 1) / defaultMoods.length, 0.01),
+      );
+    });
+
+    test(
+        'As a user, I expect usage_complete_catalog progress to reflect symptom count',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < defaultSymptoms.length - 1; index++) {
+        await db.saveEntry(
+          dateTime: DateTime(2025, 1, index + 1, 10),
+          mood: '😊',
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
+          tags: [],
+        );
+      }
+
+      final progress = await AchievementService.computeProgress(db);
+
+      expect(
+        progress['usage_complete_catalog'],
+        closeTo((defaultSymptoms.length - 1) / defaultSymptoms.length, 0.01),
+      );
+    });
+
+    test(
+        'As a user, I expect usage_personal_touch_2 progress to reflect custom symptom count',
+        () async {
+      final db = createTestDatabase();
+      addTearDown(() => db.close());
+
+      for (int index = 0; index < 3; index++) {
+        await db.addSymptom('Custom Symptom $index');
+      }
+
+      final progress = await AchievementService.computeProgress(db);
+
+      expect(progress['usage_personal_touch_2'], closeTo(3 / 5, 0.01));
     });
   });
 }
