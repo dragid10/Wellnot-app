@@ -83,6 +83,15 @@ const List<AchievementDefinition> allAchievements = [
     threshold: 30,
     quote: 'Thirty days straight. At this point, the app needs you.',
   ),
+  AchievementDefinition(
+    id: 'streak_90',
+    name: 'Quarter Year',
+    description: 'Log entries 90 days in a row',
+    category: AchievementCategory.streak,
+    threshold: 90,
+    quote:
+        'Three months. That\'s a quarter of a year. You\'re basically a monk.',
+  ),
 
   // Milestone achievements — total entries logged
   AchievementDefinition(
@@ -140,6 +149,14 @@ const List<AchievementDefinition> allAchievements = [
     category: AchievementCategory.milestone,
     threshold: 500,
     quote: 'Five hundred entries. This is your magnum opus.',
+  ),
+  AchievementDefinition(
+    id: 'milestone_365',
+    name: 'Annual Tracker',
+    description: 'Log 365 entries (not necessarily consecutive)',
+    category: AchievementCategory.milestone,
+    threshold: 365,
+    quote: 'One entry per day for a year. Consistency beats perfection.',
   ),
 
   // Usage achievements — first-time actions and behavior
@@ -272,6 +289,47 @@ const List<AchievementDefinition> allAchievements = [
     threshold: 1,
     quote: 'Playing favorites has never been this productive.',
   ),
+  AchievementDefinition(
+    id: 'usage_full_spectrum',
+    name: 'Full Spectrum',
+    description: 'Use all 17 moods across your entries',
+    category: AchievementCategory.usage,
+    threshold: 17,
+    quote: 'You\'ve felt them all. Every shade of human experience.',
+  ),
+  AchievementDefinition(
+    id: 'usage_complete_catalog',
+    name: 'Complete Catalog',
+    description: 'Track all 6 default symptoms',
+    category: AchievementCategory.usage,
+    threshold: 6,
+    quote: 'The full default catalog. The app was built for you.',
+  ),
+  AchievementDefinition(
+    id: 'usage_personal_touch_2',
+    name: 'Personal Touch 2.0',
+    description: 'Create 5 custom symptoms',
+    category: AchievementCategory.usage,
+    threshold: 5,
+    quote: 'Sixteen symptoms total. This is your diagnosis now.',
+  ),
+  AchievementDefinition(
+    id: 'usage_double_entry',
+    name: 'Double Down',
+    description: 'Log 2+ entries on the same day',
+    category: AchievementCategory.usage,
+    threshold: 1,
+    quote:
+        'Morning and evening. The app knows you better than you know yourself.',
+  ),
+  AchievementDefinition(
+    id: 'usage_consistent_tracker',
+    name: 'On Schedule',
+    description: 'Log entries at roughly the same time on 5 different days',
+    category: AchievementCategory.usage,
+    threshold: 5,
+    quote: 'Five days, same time. You\'re basically a Swiss watch.',
+  ),
 
   // 365-day streak
   AchievementDefinition(
@@ -285,7 +343,7 @@ const List<AchievementDefinition> allAchievements = [
 ];
 
 /// Total number of achievements in the app.
-const int totalAchievementCount = 28;
+const int totalAchievementCount = 35;
 
 /// Groups all achievements by category for sectioned display.
 Map<AchievementCategory, List<AchievementDefinition>>
