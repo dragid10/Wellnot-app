@@ -311,7 +311,7 @@ const List<AchievementDefinition> allAchievements = [
     description: 'Create 5 custom symptoms',
     category: AchievementCategory.usage,
     threshold: 5,
-    quote: 'Sixteen symptoms total. This is your diagnosis now.',
+    quote: 'Sixteen symptoms total. This is your symptom universe now.',
   ),
   AchievementDefinition(
     id: 'usage_double_entry',
@@ -319,8 +319,7 @@ const List<AchievementDefinition> allAchievements = [
     description: 'Log 2+ entries on the same day',
     category: AchievementCategory.usage,
     threshold: 1,
-    quote:
-        'Morning and evening. The app knows you better than you know yourself.',
+    quote: 'Morning and evening. Double the logging, double the insight.',
   ),
   AchievementDefinition(
     id: 'usage_consistent_tracker',
@@ -328,7 +327,8 @@ const List<AchievementDefinition> allAchievements = [
     description: 'Log entries at roughly the same time on 5 different days',
     category: AchievementCategory.usage,
     threshold: 5,
-    quote: 'Five days, same time. You\'re basically a Swiss watch.',
+    quote:
+        'Five days, same time. You\'re as reliable as a Swiss watch—accurate and on schedule.',
   ),
 
   // 365-day streak
