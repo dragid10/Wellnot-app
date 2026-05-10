@@ -11,6 +11,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'defaults.dart';
+
 /// Categories that group related achievements.
 enum AchievementCategory {
   streak(label: 'Streaks', icon: Icons.local_fire_department),
@@ -37,7 +39,7 @@ class AchievementDefinition {
   /// while locked and [unlockedName] replaces it once the achievement unlocks.
   final String? unlockedName;
 
-  const AchievementDefinition({
+  AchievementDefinition({
     required this.id,
     required this.name,
     required this.description,
@@ -49,7 +51,7 @@ class AchievementDefinition {
 }
 
 /// All achievements in the app, ordered by category then threshold.
-const List<AchievementDefinition> allAchievements = [
+final List<AchievementDefinition> allAchievements = [
   // Streak achievements — consecutive days with entries
   AchievementDefinition(
     id: 'streak_3',
@@ -292,17 +294,17 @@ const List<AchievementDefinition> allAchievements = [
   AchievementDefinition(
     id: 'usage_full_spectrum',
     name: 'Full Spectrum',
-    description: 'Use all 17 moods across your entries',
+    description: 'Use all default moods across your entries',
     category: AchievementCategory.usage,
-    threshold: 17,
+    threshold: defaultMoods.length,
     quote: 'You\'ve felt them all. Every shade of human experience.',
   ),
   AchievementDefinition(
     id: 'usage_complete_catalog',
     name: 'Complete Catalog',
-    description: 'Track all 6 default symptoms',
+    description: 'Track all default symptoms',
     category: AchievementCategory.usage,
-    threshold: 6,
+    threshold: defaultSymptoms.length,
     quote: 'The full default catalog. The app was built for you.',
   ),
   AchievementDefinition(
@@ -343,7 +345,7 @@ const List<AchievementDefinition> allAchievements = [
 ];
 
 /// Total number of achievements in the app.
-const int totalAchievementCount = 35;
+int get totalAchievementCount => allAchievements.length;
 
 /// Groups all achievements by category for sectioned display.
 Map<AchievementCategory, List<AchievementDefinition>>
