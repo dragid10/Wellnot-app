@@ -154,19 +154,19 @@ class AchievementService {
       newlyUnlocked.add('usage_first_tag');
     }
 
-    // Full Spectrum: use all 17 moods
+    // Full Spectrum: use all default moods
     if (!alreadyUnlocked.contains('usage_full_spectrum')) {
       final distinctMoods = await database.getDistinctMoodCount();
-      if (distinctMoods >= 17) {
+      if (distinctMoods >= defaultMoods.length) {
         await database.unlockAchievement('usage_full_spectrum', distinctMoods);
         newlyUnlocked.add('usage_full_spectrum');
       }
     }
 
-    // Complete Catalog: track all 6 default symptoms
+    // Complete Catalog: track all default symptoms
     if (!alreadyUnlocked.contains('usage_complete_catalog')) {
       final distinctSymptoms = await database.getDistinctSymptomCount();
-      if (distinctSymptoms >= 6) {
+      if (distinctSymptoms >= defaultSymptoms.length) {
         await database.unlockAchievement(
             'usage_complete_catalog', distinctSymptoms);
         newlyUnlocked.add('usage_complete_catalog');
@@ -384,7 +384,9 @@ class AchievementService {
     final batch = <({String id, int progress, DateTime unlockedAt})>[];
     final now = DateTime.now();
 
-    // Load all data upfront
+    // Load all data upfront to avoid N+1 queries — we need every piece of
+    // data for the batch unlock loop, so fetch it all in parallel before
+    // iterating over achievements.
     final totalEntries = await database.getTotalEntryCount();
     final dates = await database.getAllEntryDates();
     final allEntries = await database.getAllEntriesWithDetails();
@@ -447,8 +449,8 @@ class AchievementService {
       ));
     }
 
-    // Usage: full spectrum (all 17 moods)
-    if (distinctMoods >= 17) {
+    // Usage: full spectrum (all default moods)
+    if (distinctMoods >= defaultMoods.length) {
       batch.add((
         id: 'usage_full_spectrum',
         progress: distinctMoods,
@@ -456,8 +458,8 @@ class AchievementService {
       ));
     }
 
-    // Usage: complete catalog (all 6 default symptoms)
-    if (distinctSymptoms >= 6) {
+    // Usage: complete catalog (all default symptoms)
+    if (distinctSymptoms >= defaultSymptoms.length) {
       batch.add((
         id: 'usage_complete_catalog',
         progress: distinctSymptoms,
