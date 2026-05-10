@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:symptom_tracker_app/constants/defaults.dart';
 import 'package:symptom_tracker_app/models/symptom_models.dart';
 import 'package:symptom_tracker_app/services/achievement_service.dart';
 
@@ -579,37 +580,19 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  // Full Spectrum achievement (all 17 moods)
+  // Full Spectrum achievement (all default moods)
   // ---------------------------------------------------------------------------
   group('Full Spectrum achievement', () {
-    test('As a user, I expect using all 17 moods to unlock usage_full_spectrum',
+    test(
+        'As a user, I expect using all default moods to unlock usage_full_spectrum',
         () async {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const moods = [
-        '😊',
-        '😢',
-        '😠',
-        '😩',
-        '😐',
-        '🤢',
-        '😴',
-        '🤔',
-        '🤒',
-        '😮',
-        '😰',
-        '🤕',
-        '🙃',
-        '😬',
-        '😮‍💨',
-        '🥵',
-        '🤧',
-      ];
-      for (int index = 0; index < moods.length; index++) {
+      for (int index = 0; index < defaultMoods.length; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
-          mood: moods[index],
+          mood: defaultMoods[index],
           symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
           tags: [],
         );
@@ -617,7 +600,7 @@ void main() {
 
       final unlocked = await AchievementService.checkAfterSave(
         db,
-        entryDateTime: DateTime(2025, 1, 17, 10),
+        entryDateTime: DateTime(2025, 1, defaultMoods.length + 1, 10),
         symptomCount: 1,
         hasNote: false,
         hasTags: false,
@@ -626,33 +609,16 @@ void main() {
       expect(unlocked, contains('usage_full_spectrum'));
     });
 
-    test('As a user, I expect 16 moods not to unlock usage_full_spectrum',
+    test(
+        'As a user, I expect one less than the default mood count not to unlock usage_full_spectrum',
         () async {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const moods = [
-        '😊',
-        '😢',
-        '😠',
-        '😩',
-        '😐',
-        '🤢',
-        '😴',
-        '🤔',
-        '🤒',
-        '😮',
-        '😰',
-        '🤕',
-        '🙃',
-        '😬',
-        '😮‍💨',
-        '🥵',
-      ];
-      for (int index = 0; index < moods.length; index++) {
+      for (int index = 0; index < defaultMoods.length - 1; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
-          mood: moods[index],
+          mood: defaultMoods[index],
           symptoms: [UserSymptomModel(id: 1, name: 'Headache')],
           tags: [],
         );
@@ -660,7 +626,7 @@ void main() {
 
       final unlocked = await AchievementService.checkAfterSave(
         db,
-        entryDateTime: DateTime(2025, 1, 16, 10),
+        entryDateTime: DateTime(2025, 1, defaultMoods.length, 10),
         symptomCount: 1,
         hasNote: false,
         hasTags: false,
@@ -671,35 +637,29 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  // Complete Catalog achievement (all 6 default symptoms)
+  // Complete Catalog achievement (all default symptoms)
   // ---------------------------------------------------------------------------
   group('Complete Catalog achievement', () {
     test(
-        'As a user, I expect tracking all 6 default symptoms to unlock usage_complete_catalog',
+        'As a user, I expect tracking all default symptoms to unlock usage_complete_catalog',
         () async {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const symptoms = [
-        'Dizziness',
-        'Dry mouth',
-        'Fatigue',
-        'Fever',
-        'Headache',
-        'Nausea',
-      ];
-      for (int index = 0; index < symptoms.length; index++) {
+      for (int index = 0; index < defaultSymptoms.length; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
           mood: '😊',
-          symptoms: [UserSymptomModel(id: index + 1, name: symptoms[index])],
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
           tags: [],
         );
       }
 
       final unlocked = await AchievementService.checkAfterSave(
         db,
-        entryDateTime: DateTime(2025, 1, 6, 10),
+        entryDateTime: DateTime(2025, 1, defaultSymptoms.length + 1, 10),
         symptomCount: 1,
         hasNote: false,
         hasTags: false,
@@ -708,30 +668,26 @@ void main() {
       expect(unlocked, contains('usage_complete_catalog'));
     });
 
-    test('As a user, I expect 5 symptoms not to unlock usage_complete_catalog',
+    test(
+        'As a user, I expect one less than the default symptom count not to unlock usage_complete_catalog',
         () async {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const symptoms = [
-        'Dizziness',
-        'Dry mouth',
-        'Fatigue',
-        'Fever',
-        'Headache'
-      ];
-      for (int index = 0; index < symptoms.length; index++) {
+      for (int index = 0; index < defaultSymptoms.length - 1; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
           mood: '😊',
-          symptoms: [UserSymptomModel(id: index + 1, name: symptoms[index])],
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
           tags: [],
         );
       }
 
       final unlocked = await AchievementService.checkAfterSave(
         db,
-        entryDateTime: DateTime(2025, 1, 5, 10),
+        entryDateTime: DateTime(2025, 1, defaultSymptoms.length, 10),
         symptomCount: 1,
         hasNote: false,
         hasTags: false,
@@ -976,28 +932,10 @@ void main() {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const moods = [
-        '😊',
-        '😢',
-        '😠',
-        '😩',
-        '😐',
-        '🤢',
-        '😴',
-        '🤔',
-        '🤒',
-        '😮',
-        '😰',
-        '🤕',
-        '🙃',
-        '😬',
-        '😮‍💨',
-        '🥵',
-      ];
-      for (int index = 0; index < moods.length; index++) {
+      for (int index = 0; index < defaultMoods.length - 1; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
-          mood: moods[index],
+          mood: defaultMoods[index],
           symptoms: [],
           tags: [],
         );
@@ -1005,7 +943,10 @@ void main() {
 
       final progress = await AchievementService.computeProgress(db);
 
-      expect(progress['usage_full_spectrum'], closeTo(16 / 17, 0.01));
+      expect(
+        progress['usage_full_spectrum'],
+        closeTo((defaultMoods.length - 1) / defaultMoods.length, 0.01),
+      );
     });
 
     test(
@@ -1014,25 +955,23 @@ void main() {
       final db = createTestDatabase();
       addTearDown(() => db.close());
 
-      const symptoms = [
-        'Dizziness',
-        'Dry mouth',
-        'Fatigue',
-        'Fever',
-        'Headache'
-      ];
-      for (int index = 0; index < symptoms.length; index++) {
+      for (int index = 0; index < defaultSymptoms.length - 1; index++) {
         await db.saveEntry(
           dateTime: DateTime(2025, 1, index + 1, 10),
           mood: '😊',
-          symptoms: [UserSymptomModel(id: index + 1, name: symptoms[index])],
+          symptoms: [
+            UserSymptomModel(id: index + 1, name: defaultSymptoms[index])
+          ],
           tags: [],
         );
       }
 
       final progress = await AchievementService.computeProgress(db);
 
-      expect(progress['usage_complete_catalog'], closeTo(5 / 6, 0.01));
+      expect(
+        progress['usage_complete_catalog'],
+        closeTo((defaultSymptoms.length - 1) / defaultSymptoms.length, 0.01),
+      );
     });
 
     test(
