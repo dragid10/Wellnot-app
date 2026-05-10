@@ -50,6 +50,10 @@ class AchievementDefinition {
   });
 }
 
+/// Number of custom symptoms required to unlock the Personal Touch 2.0
+/// achievement.
+const int personalTouch2Threshold = 5;
+
 /// All achievements in the app, ordered by category then threshold.
 final List<AchievementDefinition> allAchievements = [
   // Streak achievements — consecutive days with entries
@@ -312,7 +316,7 @@ final List<AchievementDefinition> allAchievements = [
     name: 'Personal Touch 2.0',
     description: 'Create 5 custom symptoms',
     category: AchievementCategory.usage,
-    threshold: 5,
+    threshold: personalTouch2Threshold,
     quote: 'Sixteen symptoms total. This is your symptom universe now.',
   ),
   AchievementDefinition(

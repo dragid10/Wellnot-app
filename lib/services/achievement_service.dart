@@ -286,7 +286,7 @@ class AchievementService {
 
     if (!await database.isAchievementUnlocked('usage_personal_touch_2')) {
       final customSymptoms = await database.getCustomSymptoms();
-      if (customSymptoms.length >= 5) {
+      if (customSymptoms.length >= personalTouch2Threshold) {
         await database.unlockAchievement(
             'usage_personal_touch_2', customSymptoms.length);
         unlocked.add('usage_personal_touch_2');
@@ -468,7 +468,7 @@ class AchievementService {
     }
 
     // Usage: personal touch 2.0 (5+ custom symptoms)
-    if (customSymptoms.length >= 5) {
+    if (customSymptoms.length >= personalTouch2Threshold) {
       batch.add((
         id: 'usage_personal_touch_2',
         progress: customSymptoms.length,
