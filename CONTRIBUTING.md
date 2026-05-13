@@ -9,27 +9,33 @@ Guidelines for contributing to Wellnot.
 1. Fork the repository and clone it locally
 2. Install [asdf](https://asdf-vm.com/) for version management:
    ```bash
-   # Linux
-   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0
+   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.16.7
    echo '. "$HOME/.asdf/asdf.sh"' >> ~/.zshrc  # or ~/.bashrc
    source ~/.zshrc
-
-   # macOS
-   brew install asdf
    ```
-3. Install project dependencies via asdf (the `.tool-versions` file pins Flutter and Changie versions):
+3. Install project dependencies via asdf (the `.tool-versions` file pins Flutter, Java, and Changie versions):
    ```bash
    asdf plugin add flutter
+   asdf plugin add java
    asdf plugin add changie
    asdf install
    ```
-4. Run `flutter pub get` to install dependencies
-5. Install [pre-commit](https://pre-commit.com/) and set up the Git hooks:
+4. Set `JAVA_HOME` so Flutter and Gradle find the asdf-managed JDK:
+   ```bash
+   echo 'export JAVA_HOME="$(asdf where java)"' >> ~/.zshrc  # or ~/.bashrc
+   source ~/.zshrc
+   ```
+5. Run `flutter pub get` to install dependencies
+6. Install [pre-commit](https://pre-commit.com/) and set up the Git hooks:
    ```bash
    pip install pre-commit   # or: brew install pre-commit
    pre-commit install
    ```
-6. Run `flutter test` to verify everything works
+7. Point Flutter at the asdf-managed JDK:
+   ```bash
+   flutter config --jdk-dir "$(asdf where java)"
+   ```
+8. Run `flutter doctor` to verify your toolchain, then `flutter test` to verify everything works
 
 ### Linux (Android development)
 
@@ -91,6 +97,34 @@ To run all hooks manually against every file:
 
 ```bash
 pre-commit run --all-files
+```
+
+### Building & running
+
+**Run on a connected device or emulator:**
+
+```bash
+flutter run                    # Launches on the default connected device
+flutter run -d <device-id>     # Target a specific device (use `flutter devices` to list)
+```
+
+**Build release artifacts:**
+
+```bash
+# Android
+flutter build apk              # Debug/profile APK
+flutter build appbundle         # AAB (required for Play Store)
+
+# iOS (macOS only)
+flutter build ipa               # Requires Xcode + signing configuration
+```
+
+**Code generation (Drift):**
+
+If you modify any Drift table definitions in `lib/services/database.dart`, regenerate the generated code:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ## Branching
